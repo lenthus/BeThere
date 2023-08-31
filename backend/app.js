@@ -15,7 +15,7 @@ const routes = require('./routes');
 // routes
 
 const app = express();
-app.use(routes); // Connect all the routes
+
 app.use(morgan('dev'))
 
 app.use(cookieParser())
@@ -45,7 +45,7 @@ if (!isProduction) {
       }
     })
   );
-
+  app.use(routes); // Connect all the routes
   //Error Handlers
 
 // Catch unhandled requests and forward to error handler.
@@ -57,8 +57,6 @@ app.use((_req, _res, next) => {
     next(err);
   });
 const { ValidationError } = require('sequelize');
-
-
 
 // Process sequelize errors
 app.use((err, _req, _res, next) => {
