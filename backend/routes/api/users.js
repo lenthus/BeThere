@@ -27,28 +27,7 @@ const validateSignup = [
       .withMessage('Password must be 6 characters or more.'),
     handleValidationErrors
   ];
-// ******** OLD CODE B4 PHASE5 *********
-// router.post(
-//     '/',
-//     async (req, res) => {
-//       const { email, password, username } = req.body;
-//       const hashedPassword = bcrypt.hashSync(password);
-//       const user = await User.create({ email, username, hashedPassword });
 
-//       const safeUser = {
-//         id: user.id,
-//         email: user.email,
-//         username: user.username,
-//       };
-
-//       await setTokenCookie(res, safeUser);
-
-//       return res.json({
-//         user: safeUser
-//       });
-//     }
-//   );
-// Sign up
 router.post(
     '',
     validateSignup,
