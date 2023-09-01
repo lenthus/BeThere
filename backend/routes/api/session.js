@@ -19,6 +19,8 @@ router.get(
           id: user.id,
           email: user.email,
           username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
         };
         return res.json({
           user: safeUser
@@ -75,7 +77,7 @@ const validateLogin = [
       .withMessage('Please provide a password.'),
     handleValidationErrors
   ];
-  
+
 router.post(
     '/',
     validateLogin,
@@ -103,6 +105,8 @@ router.post(
         id: user.id,
         email: user.email,
         username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
       };
 
       await setTokenCookie(res, safeUser);
