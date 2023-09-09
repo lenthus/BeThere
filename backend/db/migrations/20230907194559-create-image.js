@@ -1,4 +1,5 @@
 'use strict';
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -13,7 +14,8 @@ module.exports = {
         type: Sequelize.STRING
       },
       imageType: {
-        type: Sequelize.STRING
+        type: Sequelize.ENUM("Event","Group"),
+        allowNull:false
       },
       imageableId: {
         type: Sequelize.INTEGER
@@ -23,11 +25,14 @@ module.exports = {
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
+
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       }
     });
   },

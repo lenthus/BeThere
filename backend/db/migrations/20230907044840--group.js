@@ -12,7 +12,7 @@ module.exports = {
       organizerId: {
         type: Sequelize.INTEGER,
         references:{
-          model:'User',
+          model:'Users',
           key:'id'
         }
       },
@@ -21,10 +21,12 @@ module.exports = {
         allowNull:false
       },
       about: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull:false
       },
       type: {
-        type: Sequelize.STRING
+        allowNull:false,
+        type: Sequelize.ENUM('Online','In person')
       },
       private: {
         type: Sequelize.BOOLEAN

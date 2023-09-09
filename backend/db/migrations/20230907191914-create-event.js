@@ -30,10 +30,10 @@ module.exports = {
         type: Sequelize.STRING
       },
       startDate: {
-        type: Sequelize.STRING
+        type: Sequelize.DATE
       },
       endDate: {
-        type: Sequelize.STRING
+        type: Sequelize.DATE
       },
       capacity: {
         type: Sequelize.INTEGER
@@ -46,11 +46,13 @@ module.exports = {
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       }
     });
   },

@@ -26,18 +26,88 @@ module.exports = (sequelize, DataTypes) => {
           otherKey:'eventId'
         }
       )
+      Event.hasMany(
+        models.Image,{
+          foreignKey:"imageableId",
+          constraints: false,
+          scope: {
+            imageableType:"Event"
+          }
+        }
+      )
     }
   }
   Event.init({
-    groupId: DataTypes.INTEGER,
-    venueId: DataTypes.INTEGER,
-    name: DataTypes.STRING,
-    type: DataTypes.STRING,
-    startDate: DataTypes.STRING,
-    endDate: DataTypes.STRING,
-    capacity: DataTypes.INTEGER,
-    description: DataTypes.STRING,
-    price: DataTypes.DECIMAL
+    groupId:{
+    type:DataTypes.INTEGER,
+    },
+    venueId:{
+    type:DataTypes.INTEGER,
+    },
+    name:{
+    type:DataTypes.STRING,
+    validate:{
+      notEmpty:{
+        args:true,
+        msg:"Name must be at least 5 characters"
+      }
+    }
+    },
+    type:{
+    type:DataTypes.STRING,
+    validate:{
+      isIn:{
+        args:[['Online', 'In person']],
+        msg:"Type must be Online or In person",
+      }
+    }
+    },
+    startDate:{
+    type:DataTypes.DATE,
+    validate: {
+      customValidator(value) {
+        if (new Date(value) < new Date()) {
+          throw new Error("Start date must be in the future");
+        }
+      },
+    },
+    },
+    endDate:{
+    type:DataTypes.DATE,
+    validate: {
+      customValidator(value) {
+        if (new Date(value) < new Date(this.startDate)) {
+          throw new Error("End date is less than start date");
+        }
+      },
+    },
+    },
+    capacity:{
+    type:DataTypes.INTEGER,
+    validate:{
+      isInt:{
+        msg:"Capacity must be an integer"
+      }
+    }
+    },
+    description:{
+    type:DataTypes.STRING,
+    validate:{
+      notEmpty:{
+        args:true,
+        msg:"Description is required",
+      }
+    }
+    },
+    price:{
+    type:DataTypes.DECIMAL,
+    validate:{
+      isDecimal:{
+
+        msg:"Price is invalid"
+      }
+    }
+    },
   }, {
     sequelize,
     modelName: 'Event',

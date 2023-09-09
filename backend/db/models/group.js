@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
 
       Group.belongsToMany(
           models.User,
-          {through:models.Group,
+          { through: models.Membership,
           foreignKey:'groupId',
           otherKey:'userId'}
         )
@@ -31,6 +31,15 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey:'groupId'
           }
         )
+        Group.hasMany(
+          models.Image,{
+            foreignKey:"imageableId",
+            constraints: false,
+            scope: {
+              imageableType:"Group"
+            }
+          }
+        )
     }
   }
   Group.init({
@@ -41,20 +50,52 @@ module.exports = (sequelize, DataTypes) => {
       type:DataTypes.STRING,
       allowNull:false,
       validator: {
-        len:[1,60]
+        len:{
+        args:[[1,60]],
+        msg:"Name must be 60 characters or less"
       }
-    },
+    }},
     about:{
       type:DataTypes.STRING,
       allowNull:false,
       validator: {
-        len:[1,50]
+        len:{
+        args:[[1,50]],
+        msg:"About must be 50 characters or more"
+      }
+    }},
+    type:{
+      type:DataTypes.ENUM('Online','In person'),
+      validate:{
+        isIn:{
+          args:[['Online','In person']],
+          msg:"Type must be 'Online' or 'In person'"
+        }
+        }
+      },
+    private:{
+      type:DataTypes.BOOLEAN,
+    },
+    city:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate:{
+        notNull:{
+          args:true,
+          msg:"City is required"
+        }
       }
     },
-    type: DataTypes.STRING,
-    private: DataTypes.BOOLEAN,
-    city: DataTypes.STRING,
-    state: DataTypes.STRING
+    state:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate:{
+        notNull:{
+          args:true,
+          msg:"State is required"
+        }
+      }
+    }
   }, {
     sequelize,
     modelName: 'Group',
