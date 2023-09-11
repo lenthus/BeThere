@@ -1417,13 +1417,8 @@ Returns the members of a group specified by its id.
           "Membership": {
             "status": "member"
           },
-        },
-      ]
-    }
-    ```
-
-* Error response: Couldn't find a Group with the specified id
-  * Status Code: 404
+        },Require Authentication: Current User must be the organizer of the group or a member of
+  the group with a status of "co-host"
   * Headers:
     * Content-Type: application/json
   * Body:

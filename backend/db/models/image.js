@@ -4,6 +4,11 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Image extends Model {
+    getImageable(options) {
+      if (!this.imageType) return Promise.resolve(null);
+      const mixinMethodName = `get${this.imageType}`;
+      return this[mixinMethodName](options);
+    }
 
     static associate(models) {
       Image.belongsTo(models.Event, {
