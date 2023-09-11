@@ -134,7 +134,7 @@ router.delete('/:groupId', requireAuth, async(req, res, next)=>{
         }
     }else{
         const err = new Error("Group couldn't be found")
-        err.status = 400
+        err.status = 404
         next(err)
     }
 })
@@ -187,4 +187,6 @@ router.get('/:groupId/venues', requireAuth, async(req, res, next)=>{
     err.status = 404
     next(err)
 })
+
+
 module.exports = router;
