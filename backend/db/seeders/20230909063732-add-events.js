@@ -6,7 +6,7 @@ const newEvents = [
   {
     name: "Evening Tennis on the Water",
     event: [{
-      "venueId": 2,
+      "venueId": 1,
       "name": "Tennis Group First Meet and Greet",
       "type": "Online",
       "capacity": 10,
