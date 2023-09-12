@@ -25,7 +25,6 @@ module.exports = {
     for (const users of newUserGroup){
       const {username, group} = users
       const userGroup = await User.findOne({where: { username }})
-      console.log(userGroup)
 
 
       for (const newGroup of group) {
