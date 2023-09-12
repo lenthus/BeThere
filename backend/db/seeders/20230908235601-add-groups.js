@@ -8,7 +8,7 @@ if (process.env.NODE_ENV === 'production') {
 
 const newUserGroup = [
   {
-    userName: 'Demo-lition',
+    username: 'Demo-lition',
     group:[ {
       "name": "Evening Tennis on the Water",
       "about": "Enjoy rounds of tennis with a tight-nit group of people on the water facing the Brooklyn Bridge. Singles or doubles.",
@@ -23,8 +23,8 @@ const newUserGroup = [
 module.exports = {
   async up (queryInterface, Sequelize) {
     for (const users of newUserGroup){
-      const {userName, group} = users
-      const userGroup = await User.findOne({where: { userName }})
+      const {username, group} = users
+      const userGroup = await User.findOne({where: { username }})
       console.log(userGroup)
 
 
@@ -37,8 +37,8 @@ module.exports = {
 
   async down (queryInterface, Sequelize) {
     for (const users of newUserGroup){
-      const {userName, group} = users
-      const userGroup = await User.findOne({where: { userName }})
+      const {username, group} = users
+      const userGroup = await User.findOne({where: { username }})
 
 
       for (const newGroup of group) {
