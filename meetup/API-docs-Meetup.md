@@ -387,6 +387,7 @@ Returns all the groups.
 Returns the details of a group specified by its id.
 
 * Require Authentication: false
+    }, {
 * Request
   * Method:GET
   * URL: /api/groups/:groupId

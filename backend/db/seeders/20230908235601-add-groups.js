@@ -1,6 +1,6 @@
 'use strict';
 
-const { User, Group } = require('../models')
+const { User, Group, Membership } = require('../models')
 let options = {};
 if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;  // define your schema in options object
@@ -28,10 +28,13 @@ module.exports = {
 
 
       for (const newGroup of group) {
-        await Group.create({...newGroup, organizerId: userGroup.id})
+        const groupMake = await Group.create({...newGroup, organizerId: userGroup.id})
+        const memberMake = await Membership.create( {userId:userGroup.id,groupId:groupMake.id,status:"co-host"})
       }
 
     }
+
+
   },
 
   async down (queryInterface, Sequelize) {
@@ -41,9 +44,12 @@ module.exports = {
 
 
       for (const newGroup of group) {
+        const memberMake = await Membership.destroy({where: {userId:userGroup.id}})
         await Group.destroy({ where: {...newGroup, organizerId: userGroup.id}})
+
       }
 
     }
+
   }
 };
