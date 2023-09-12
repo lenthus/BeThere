@@ -19,7 +19,6 @@ module.exports = {
       for (const group of newVenues){
         const {name, venue} = group
         const groupVenue = await Group.findOne({where: { name }})
-        console.log(groupVenue)
 
 
         for (const ven of venue) {
@@ -33,7 +32,6 @@ module.exports = {
     for (const group of newVenues){
       const {name, venue} = group
       const groupVenue = await Group.findOne({where: { name }})
-      console.log(groupVenue)
 
 
       for (const ven of venue) {
