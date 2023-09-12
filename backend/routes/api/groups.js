@@ -38,7 +38,7 @@ router.get('/:groupId', async(req,res,next)=>{
             {model:User}
         ]
     })
-    const getImages = await getGroups.getImages()
+
     if (!getGroups) {
     const err = new Error("Group couldn't be found")
     err.status = 404
@@ -52,7 +52,7 @@ router.post('/',requireAuth, async(req, res, next)=>{
     const userId = req.user.id
     const {name,about,type,private,city,state} = req.body
 
-    const groupCreate = await Group.createGroup({
+    const groupCreate = await Group.create({
         name,
         about,
         type,
@@ -79,7 +79,13 @@ router.post('/:groupId/images',requireAuth, async(req, res, next)=>{
     preview,
     imageType: 'Group'
     })
-    return res.json(imgCreate)
+
+    const imgReturn = {
+        id:imgCreate.id,
+        url:imgCreate.url,
+        preview:imgCreate.preview
+    }
+    return res.json(imgReturn)
 }
     else{
         const err = new Error("Group couldn't be found")
