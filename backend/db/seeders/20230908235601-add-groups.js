@@ -29,11 +29,11 @@ module.exports = {
 
       for (const newGroup of group) {
         const groupMake = await Group.create({...newGroup, organizerId: userGroup.id})
-        const memberMake = await Membership.create( {userId:userGroup.id,groupId:groupMake.id,status:"co-host"})
       }
-
     }
-
+    const userGroup = await User.findOne({where: { username:'Demo-lition' }})
+    const groupFind = await Group.findOne({where:{name:"Evening Tennis on the Water"}})
+    const memberMake = await Membership.create( {userId:userGroup.id,groupId:groupFind.id,status:"co-host"})
 
   },
 
@@ -48,8 +48,6 @@ module.exports = {
         await Group.destroy({ where: {...newGroup, organizerId: userGroup.id}})
 
       }
-
     }
-
   }
 };

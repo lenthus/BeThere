@@ -56,6 +56,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     lat:{
     type:DataTypes.DECIMAL,
+    allowNull:false,
     validate:{
       isDecimal:{
         args:true,
@@ -69,6 +70,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     lng:{
     type:DataTypes.DECIMAL,
+    allowNull:false,
     validate:{
       isDecimal:{
         args:true,
