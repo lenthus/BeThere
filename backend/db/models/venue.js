@@ -12,7 +12,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Venue.belongsTo(
         models.Group,{
-          foreignKey:'groupId'
+          foreignKey:'groupId',
+          onDelete:'CASCADE'
         }
       )
       Venue.hasMany(
