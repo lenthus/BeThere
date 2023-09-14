@@ -2,6 +2,8 @@ const express = require('express');
 const { Op } = require('sequelize');
 const { Event, Group, Image, Membership,User,Venue,Attendee} = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
+const group = require('../../db/models/group');
+const { memberCheck } = require('../../utils/checks');
 const router = express.Router();
 
 router.get('/', async(req,res)=>{
@@ -135,7 +137,7 @@ router.put('/:groupId', requireAuth, async(req, res, next)=>{
     const groupFind = await Group.findByPk(groupId)
     if (groupFind){
     if (groupFind.organizerId === userId){
-    const groupEdit = await groupFind.save({
+    const groupEdit = await groupFind.set({
         name,
         about,
         type,
@@ -163,9 +165,13 @@ router.delete('/:groupId', requireAuth, async(req, res, next)=>{
     const groupGet = await Group.findByPk(groupId)
     if (groupGet){
         if (groupGet.organizerId === userId){
-            Group.destroy(groupGet)
+          await groupGet.destroy()
 
-            return res.json("Successfully deleted")
+            return res.json({"message":"Successfully deleted"})
+        }else{
+            const err = new Error("Group couldn't be found")
+            err.status = 404
+            next(err)
         }
     }else{
         const err = new Error("Group couldn't be found")
@@ -239,7 +245,11 @@ router.get('/:groupId/venues', requireAuth, async(req, res, next)=>{
         }
         venueReturn.push(venReturn)
     }
-        return res.json(venueReturn)
+        return res.json({"Venue":venueReturn})
+    }else{
+        const err= new Error("Group couldn't be found")
+        err.status = 404
+        next(err)
     }}else{
     const err= new Error("Group couldn't be found")
     err.status = 404
@@ -297,6 +307,180 @@ router.get('/:groupId/events', async(req, res, next)=>{
     }
     return res.json(evReturn)
 })
+router.post('/:groupId/events', requireAuth, async(req, res, next)=>{
+    const userId = req.user.id
+    const groupId = req.params.groupId
+    const {venueId,name,type,capacity,price,description,startDate,endDate} =req.body
+
+    const membershipCheck = await Membership.findAll({where:
+        {userId,
+        groupId}
+    })
+
+    const groupCheck = await Group.findByPk(groupId)
+    if (groupCheck){
+    if (groupCheck.organizerId===userId||membershipCheck.status==='co-host'){
+        const eventBuild = await groupCheck.createEvent({
+           venueId,
+           name,
+           type,
+           capacity,
+           price,
+           description,
+           startDate,
+           endDate
+
+        })
+        const eventReturn = {
+            id:eventBuild.id,
+            venueId:eventBuild.venueId,
+            groupId:eventBuild.groupId,
+            name:eventBuild.name,
+            type:eventBuild.type,
+            capacity:eventBuild.capacity,
+            price:eventBuild.price,
+            description:eventBuild.description,
+            startDate:eventBuild.startDate,
+            endDate:eventBuild.endDate
+        }
+        return res.json(eventReturn)
+    }}else{
+    const err= new Error("Group couldn't be found")
+    err.status = 404
+    next(err)
+}})
+
+//! Finish after Membership routes!!!
+router.get('/:groupId/members', async(req, res, next)=>{
+    const userId = req.user.id
+    const groupId = req.params.groupId
+
+    groupCheck = await Group.findByPk(groupId)
+
+    if(!groupCheck){
+        const err= new Error("Group couldn't be found")
+    err.status = 404
+    next(err)
+    }
 
 
+
+    if (groupCheck.organizerId === userId||memberCheck(userId,groupId)){
+       const memberList= Membership.findAll({where:{groupId,}})
+
+        return res.json(memberList)
+    }
+
+})
+
+router.post('/:groupId/membership', requireAuth, async (req, res, next)=>{
+    const userId = req.user.id
+    const groupId = req.params.groupId
+
+    groupCheck = await Group.findByPk(groupId)
+    if(!groupCheck){
+        const err= new Error("Group couldn't be found")
+    err.status = 404
+    next(err)
+    }
+
+    const memberGet = await Membership.findOne({where:{groupId}})
+    if (memberGet){
+    if(memberGet.status==="pending"){
+        return res.json("Membership has already been requested")
+    }
+    if(memberGet.status==="member"||memberGet.status==="co-host"){
+        return res.json("User is already a member of the group")
+    }}else{
+        const memberMake = await Membership.create({
+            groupId:groupId,
+            userId:userId,
+            status:"pending"
+        })
+        const memberReturn =  {
+            memberId:userId,
+            status:memberMake.status
+        }
+        return res.json(memberReturn)
+    }
+})
+
+router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
+    const userId = req.user.id
+    const groupId = req.params.groupId
+    const {memberId, status} = req.body
+
+    let membershipGet = await Membership.findOne({where:{
+        userId:memberId,
+        groupId:groupId
+    }})
+    if(!membershipGet){
+        const err = new Error("Membership between the user and the group does not exist")
+        err.status = 403
+        next(err)
+    }
+    groupCheck = await Group.findByPk(groupId)
+    if(!groupCheck){
+        const err= new Error("Group couldn't be found")
+    err.status = 404
+    next(err)
+    }
+    if(status==="pending"){
+        const err = new Error("Cannot change a membership status to pending")
+        err.status = 403
+        next(err)
+    }
+    const memberGet = await Membership.findOne({where:{userId}})
+    if (memberGet){
+    if(groupCheck.organizerId!==userId&&memberGet.status!=="co-host"){
+        const err= new Error("Group couldn't be found")
+        err.status = 403
+        next(err)
+    }
+    //membership change options
+    if(memberGet.status==="co-host"&&status==="co-host"){
+        const err = new Error("Must be Organizer")
+        err.status = 403
+        next(err)
+    }
+    if((groupCheck.organizerId===userId||memberGet.status==="co-host")&&status==="member"){
+        const memberMake = await membershipGet.set({
+            groupId:groupId,
+            memberId:memberId,
+            status:"member"
+        })
+        const memberReturn =  {
+            id:memberMake.id,
+            groupId:memberMake.groupId,
+            memberId:memberMake.memberId,
+            status:memberMake.status
+        }
+        return res.json(memberReturn)
+
+    }
+    if (groupCheck.organizerId===userId&&status==="co-host"){
+        const memberMake = await membershipGet.set({
+            groupId:groupId,
+            memberId:memberId,
+            status:"co-host"
+        })
+        const memberReturn =  {
+            id:memberMake.id,
+            groupId:memberMake.groupId,
+            memberId:memberMake.memberId,
+            status:memberMake.status
+        }
+        return res.json(memberReturn)
+    }
+    }else{
+        const memberMake = await Membership.create({
+            groupId:groupId,
+            memberId:userId,
+            status:"pending"
+        })
+
+    }
+
+
+})
 module.exports = router;
