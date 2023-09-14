@@ -118,9 +118,92 @@ router.get('/:eventId', async(req, res, next)=>{
 
         }
 
-
     return res.json(evenReturn)
 })
+router.put('/:eventId', requireAuth, async(req, res, next)=>{
+    const userId = req.user.id
+    const eventId = req.params.eventId
+    const {venueId,name,type,capacity,price,description,startDate,endDate} =req.body
+    const getGroupId = await Venue.findByPk(venueId)
+    const eventChecker = await Event.findByPk(eventId)
+    const groupId = getGroupId.groupId
 
+    if (!getGroupId){
+        const err = new Error("Venue couldn't be found")
+        err.status = 404
+        next(err)
+    }
+
+    if (!eventChecker){
+          const err = new Error("Event couldn't be found")
+                err.status = 404
+                next(err)
+    }
+
+    const membershipCheck = await Membership.findAll({where:
+        {userId,
+        groupId}
+    })
+    const groupCheck = await Group.findByPk(groupId)
+
+    if (groupCheck){
+    if (groupCheck.organizerId===userId||membershipCheck.status==='co-host'){
+
+        const getEvent = await Event.findByPk(eventId)
+        const eventBuild = getEvent.set({
+           venueId,
+           name,
+           type,
+           capacity,
+           price,
+           description,
+           startDate,
+           endDate
+
+        })
+
+        const eventReturn = {
+            id:eventBuild.id,
+            venueId:eventBuild.venueId,
+            groupId:eventBuild.groupId,
+            name:eventBuild.name,
+            type:eventBuild.type,
+            capacity:eventBuild.capacity,
+            price:eventBuild.price,
+            description:eventBuild.description,
+            startDate:eventBuild.startDate,
+            endDate:eventBuild.endDate
+        }
+        return res.json(eventReturn)
+    }}})
+
+router.delete('/:eventId', requireAuth, async (req, res, next)=>{
+    const userId = req.user.id
+    const eventId = req.params.eventId
+
+    const eventCheck = await Event.findByPk(eventId)
+
+
+    const groupId = eventCheck.groupId
+    const membershipCheck = await Membership.findAll({where:
+        {userId,
+        groupId}
+    })
+    const groupCheck = await Group.findByPk(groupId)
+
+    if (groupCheck.organizerId===userId||membershipCheck.status==='co-host'){
+    const eventDel = await Event.findByPk(eventId)
+    Event.destroy({where:{id:eventId}})
+
+    return res.json("Successfully deleted")
+    }
+    else{
+    const err= new Error("Event couldn't be found")
+    err.status = 404
+    next(err)
+
+
+}
+})
 
 module.exports = router;
