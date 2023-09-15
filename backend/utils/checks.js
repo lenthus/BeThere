@@ -2,8 +2,9 @@ const express = require('express');
 const { Op } = require('sequelize');
 const { Event, Venue, Membership, Group } = require('../db/models');
 
+//! Changed from FindAll
 const memberCheck = async (userId,groupId) => {
-    const check = await Membership.findAll({where:{
+    const check = await Membership.findOne({where:{
     userId,
     groupId,
 }})
