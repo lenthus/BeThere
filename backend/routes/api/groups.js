@@ -146,6 +146,7 @@ router.put('/:groupId', requireAuth, async(req, res, next)=>{
         state,
         organizerId:userId
     })
+    await groupEdit.save()
    return res.json(groupEdit)} else
    {
     const err = new Error("Bad Request")
@@ -350,12 +351,12 @@ router.post('/:groupId/events', requireAuth, async(req, res, next)=>{
     next(err)
 }})
 
-//! Finish after Membership routes!!!
+
 router.get('/:groupId/members', async(req, res, next)=>{
     const userId = req.user.id
     const groupId = req.params.groupId
 
-    groupCheck = await Group.findByPk(groupId)
+    const groupCheck = await Group.findByPk(groupId)
 
     if(!groupCheck){
         const err= new Error("Group couldn't be found")
@@ -363,15 +364,48 @@ router.get('/:groupId/members', async(req, res, next)=>{
     next(err)
     }
 
+    if (groupCheck.organizerId === userId||memberCheck(userId,groupId)==="co-host"){
+       const memberList= await Membership.findAll({
+         where:{groupId:groupId},
+    })
+        let Members = []
+        for(const user of memberList){
+            const userDetails = await User.findByPk(user.userId)
+             let use={
+                id:userId,
+                firstName:userDetails.firstName,
+                lastName:userDetails.lastName,
+                Membership:{
+                    status:user.status
+                }
+            }
+            Members.push(use)
+        }
 
+        return res.json({"Members":Members})
+    }else{
+        const memberList= await Membership.findAll({
+            where:{groupId:groupId},
+       })
+           let Members = []
+           for(let user of memberList){
+            if (user.status!=="pending"){
+               const userDetails = await User.findByPk(user.userId)
+                let use={
+                   id:userId,
+                   firstName:userDetails.firstName,
+                   lastName:userDetails.lastName,
+                   Membership:{
+                       status:user.status
+                   }
+               }
+               Members.push(use)
+           }}
 
-    if (groupCheck.organizerId === userId||memberCheck(userId,groupId)){
-       const memberList= Membership.findAll({where:{groupId,}})
+           return res.json({"Members":Members})
 
-        return res.json(memberList)
-    }
-
-})
+     }
+    })
 
 router.post('/:groupId/membership', requireAuth, async (req, res, next)=>{
     const userId = req.user.id
@@ -384,13 +418,17 @@ router.post('/:groupId/membership', requireAuth, async (req, res, next)=>{
     next(err)
     }
 
-    const memberGet = await Membership.findOne({where:{groupId}})
+    const memberGet = await Membership.findOne({where:{groupId,userId}})
     if (memberGet){
     if(memberGet.status==="pending"){
-        return res.json("Membership has already been requested")
+        const err= new Error("Membership has already been requested")
+        err.status = 400
+        next(err)
     }
     if(memberGet.status==="member"||memberGet.status==="co-host"){
-        return res.json("User is already a member of the group")
+        const err= new Error("User is already a member of the group")
+        err.status = 400
+        next(err)
     }}else{
         const memberMake = await Membership.create({
             groupId:groupId,
@@ -414,6 +452,7 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
         userId:memberId,
         groupId:groupId
     }})
+    console.log(membershipGet)
     if(!membershipGet){
         const err = new Error("Membership between the user and the group does not exist")
         err.status = 403
@@ -445,8 +484,6 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
     }
     if((groupCheck.organizerId===userId||memberGet.status==="co-host")&&status==="member"){
         const memberMake = await membershipGet.set({
-            groupId:groupId,
-            memberId:memberId,
             status:"member"
         })
         const memberReturn =  {
@@ -455,6 +492,7 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
             memberId:memberMake.memberId,
             status:memberMake.status
         }
+        memberMake.save()
         return res.json(memberReturn)
 
     }
@@ -470,17 +508,52 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
             memberId:memberMake.memberId,
             status:memberMake.status
         }
+        memberMake.save()
         return res.json(memberReturn)
     }
     }else{
-        const memberMake = await Membership.create({
-            groupId:groupId,
-            memberId:userId,
-            status:"pending"
-        })
+        const err= new Error("Group couldn't be found")
+        err.status = 403
+        next(err)
 
+    }
+})
+
+router.delete('/:groupId/memberShip', requireAuth, async (req, res, next)=>{
+    const userId = req.user.id
+    const groupId = req.params.groupId
+    const memberId = req.body.memberId
+
+    const groupCheck = await Group.findByPk(groupId)
+    const userCheck = await User.findByPk(memberId)
+
+    if (!groupCheck){
+        const err = new Error("Group couldn't be found")
+          err.status = 404
+          next(err)
+    }
+    if(groupCheck.organizerId!==userId&&memberCheck(userId,groupId)!=="co-host"&&memberId==userId){
+        const err = new Error("Group couldn't be found")
+          err.status = 404
+          next(err)
     }
 
 
+    if(!userCheck){
+        res.statusCode = 400
+        const err = new Error()
+        err.message = "Validation Error"
+        err.errors = {"memberId":"User couldn't be found"}
+        return res.json(err)
+    }
+    if(!memberCheck(memberId,groupId)){
+        const err = new Error("Membership does not exist for this User")
+          err.status = 400
+          next(err)
+     }
+     await Membership.destroy({where:{userId:memberId,groupId:groupId}})
+     return res.json({
+        "message": "Successfully deleted membership from group"
+      })
 })
 module.exports = router;

@@ -387,7 +387,6 @@ Returns all the groups.
 Returns the details of a group specified by its id.
 
 * Require Authentication: false
-    }, {
 * Request
   * Method:GET
   * URL: /api/groups/:groupId
@@ -1418,8 +1417,13 @@ Returns the members of a group specified by its id.
           "Membership": {
             "status": "member"
           },
-        },Require Authentication: Current User must be the organizer of the group or a member of
-  the group with a status of "co-host"
+        },
+      ]
+    }
+    ```
+
+* Error response: Couldn't find a Group with the specified id
+  * Status Code: 404
   * Headers:
     * Content-Type: application/json
   * Body:
