@@ -2,7 +2,6 @@ const express = require('express');
 const { Op } = require('sequelize');
 const { Event, Group, Image, Membership,User,Venue,Attendee} = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
-const group = require('../../db/models/group');
 const { memberCheck } = require('../../utils/checks');
 const router = express.Router();
 
@@ -55,8 +54,72 @@ router.get('/current', requireAuth, async(req,res,next)=>{
         include:[
             {model:Image}
         ]
+
     })
-    return res.json(getUserGroups)
+    const groupReturn = []
+    for (const group of getUserGroups){
+        const members = await Membership.count({where:{groupId:group.id}})
+        const imageGetter = await Image.findOne({where:{imageableId:group.id,preview:true}})
+    if (imageGetter){
+    img = imageGetter.url
+    } else{
+    img = null
+    }
+    const newGroup = {
+        id:group.id,
+        organizerId:group.organizerId,
+        name:group.name,
+        about:group.about,
+        type:group.type,
+        private:group.private,
+        city:group.city,
+        state:group.state,
+        createdAt:group.createdAt,
+        updatedAt:group.updatedAt,
+        numMembers:members,
+        previewImage:img
+    }
+    groupReturn.push(newGroup)
+    }
+    const getMembership = await Membership.findAll({
+        where:{userId:userId}
+    })
+    console.log(getMembership)
+    for (const memberShip of getMembership){
+    const getMemGroup = await Group.findOne({
+        where:{
+            id:memberShip.groupId
+        },
+        include:[
+            {model:Image}
+        ]
+    })
+        const members = await Membership.count({where:{groupId:getMemGroup.id}})
+        const imageGetter = await Image.findOne({where:{imageableId:getMemGroup.id,preview:true}})
+    if (imageGetter){
+    img = imageGetter.url
+    } else{
+    img = null
+    }
+    const newGroup = {
+        id:getMemGroup.id,
+        organizerId:getMemGroup.organizerId,
+        name:getMemGroup.name,
+        about:getMemGroup.about,
+        type:getMemGroup.type,
+        private:getMemGroup.private,
+        city:getMemGroup.city,
+        state:getMemGroup.state,
+        createdAt:getMemGroup.createdAt,
+        updatedAt:getMemGroup.updatedAt,
+        numMembers:members,
+        previewImage:img
+    }
+    groupReturn.push(newGroup)
+
+
+}
+return res.json(groupReturn)
 })
 
 router.get('/:groupId', async(req,res,next)=>{

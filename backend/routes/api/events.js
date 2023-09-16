@@ -2,11 +2,9 @@ const express = require('express');
 const { Op } = require('sequelize');
 const {Event, Venue, Membership, Group, Image, Attendee, User} = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
-const { memberCheck, superCheck } = require('../../utils/checks');
-const attendee = require('../../db/models/attendee');
+const { memberCheck } = require('../../utils/checks');
 const router = express.Router();
 const { validationResult, check } = require('express-validator');
-const {handleValidationErrors} = require('../../utils/validation')
 
 validateEvent = [
 check('page').isInt({min:1,max:10}).withMessage("Page must be greater than or equal to 1"),

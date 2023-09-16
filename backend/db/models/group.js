@@ -2,7 +2,6 @@
 const {
   Model
 } = require('sequelize');
-const { Event, Group, Image, Membership,User,Venue} = require('./');
 module.exports = (sequelize, DataTypes) => {
   class Group extends Model {
     /**

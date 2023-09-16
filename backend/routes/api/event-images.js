@@ -26,7 +26,7 @@ console.log(imageId)
     console.log(eventCheck)
     const groupCheck = await Group.findByPk(eventCheck.groupId)
 
-    if(groupCheck.organizerId!==userId && memberCheck(userId,groupCheck.id)==="co-host"){
+    if(groupCheck.organizerId!==userId && memberCheck(userId,groupCheck.id)!=="co-host"){
         const err = new Error("Event Image couldn't be found")
         err.status = 404
         next(err)

@@ -23,7 +23,7 @@ router.delete('/:imageId', requireAuth, async (req, res, next)=>{
     }
     const groupCheck = await Group.findByPk(imageCheck.imageableId)
 
-    if(groupCheck.organizerId!==userId && memberCheck(userId,groupCheck.id)==="co-host"){
+    if(groupCheck.organizerId!==userId && memberCheck(userId,groupCheck.id)!=="co-host"){
         const err = new Error("Group Image couldn't be found")
         err.status = 404
         next(err)
