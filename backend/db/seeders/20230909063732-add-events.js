@@ -37,11 +37,11 @@ module.exports = {
     for (const gEvent of newEvents){
       const {name, event} = gEvent
       const groupEvent = await Group.findOne({where: { name }})
-      console.log(groupEvent)
+
 
 
       for (const ven of event) {
-        await Event.destroy({ where: {...ven, groupId: groupEvent.id}})
+        await Event.destroy({ where: {...ven, groupId:groupEvent.id}})
       }
 
     }
