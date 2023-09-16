@@ -5,13 +5,61 @@ const { requireAuth } = require('../../utils/auth');
 const { memberCheck, superCheck } = require('../../utils/checks');
 const attendee = require('../../db/models/attendee');
 const router = express.Router();
+const { validationResult, check } = require('express-validator');
+const {handleValidationErrors} = require('../../utils/validation')
 
-router.get('/', async(req,res)=>{
+validateEvent = [
+check('page').isInt({min:1,max:10}).withMessage("Page must be greater than or equal to 1"),
+check('size').isInt({min:1,max:20}).withMessage("Size must be greater than or equal to 1"),
+check('name').isAlpha().withMessage("Name must be a string"),
+check('type').isIn(["Online","In Person"]).withMessage("Type must be 'Online' or 'In Person'"),
+check('startDate').isDate().withMessage("Start date must be a valid datetime")
+]
+
+router.get('/',validateEvent, async(req,res)=>{
+    let {page, size, name, type, startDate} = req.query
+
+    let counter = 0
+
+    const error = validationResult(req)
+    let errors = {}
+    for (const msg of error.errors){
+    if (msg.value){
+        errors[msg.path]=msg.msg
+        counter++
+    }}
+
+    if (page){
+        page = Number(page)
+        if(page>10){
+            page = 10
+        }
+    }else{
+        page = 1
+    }
+    if (size){
+        size = Number(size)
+        if(size>20){
+            size = 20
+        }
+    }else{
+        size = 1
+    }
+    console.log(page)
+    console.log(size)
+    const limit = size
+    const offset = ((page-1)*limit)
+
+    if(counter>0){
+        return res.status(400).json({"message":"Bad Request",errors})
+    }
+
     const getAllEvents = await Event.findAll({
         include:[
             {model:Group},
             {model:Venue},
-        ]
+        ],
+        limit,offset
     })
     const evReturn = []
     for (const event of getAllEvents){
@@ -34,9 +82,9 @@ router.get('/', async(req,res)=>{
             previewImage:img,
             Group:{
                 id:event.Group.id,
-            name:event.Group.name,
-            city:event.Group.city,
-            state:event.Group.state},
+                name:event.Group.name,
+                city:event.Group.city,
+                state:event.Group.state},
             Venue:{
                 id:event.Venue.id,
                 city:event.Venue.city,
@@ -46,7 +94,7 @@ router.get('/', async(req,res)=>{
         }
         evReturn.push(evenReturn)
     }
-    return res.json()
+    return res.json(evReturn)
 })
 
 
@@ -224,13 +272,15 @@ router.post('/:eventId/attendees', requireAuth, async(req,res,next)=>{
 
 
     const eventCheck = await Event.findByPk(eventId)
-    const groupId = eventCheck.groupId
 
     if (!eventCheck){
         const err= new Error("Event couldn't be found")
         err.status = 404
         next(err)
         }
+    const groupId = eventCheck.groupId
+
+
     const groupCheck = await Group.findByPk(groupId)
     const attendeeCheck = await Attendee.findOne({where:{
         eventId:eventId,

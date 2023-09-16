@@ -135,6 +135,12 @@ router.put('/:groupId', requireAuth, async(req, res, next)=>{
     const {name,about,type,private,city,state} = req.body
 
     const groupFind = await Group.findByPk(groupId)
+
+    if (!groupFind){
+        const err = new Error("Group couldn't be found")
+        err.status = 400
+        next(err)
+    }
     if (groupFind){
     if (groupFind.organizerId === userId){
     const groupEdit = await groupFind.set({
@@ -147,16 +153,13 @@ router.put('/:groupId', requireAuth, async(req, res, next)=>{
         organizerId:userId
     })
     await groupEdit.save()
-   return res.json(groupEdit)} else
+   return res.json(groupEdit)}
+    else
    {
     const err = new Error("Bad Request")
     err.status = 400
     next(err)
    }
-}else{
-    const err = new Error("Group couldn't be found")
-    err.status = 400
-    next(err)
 }})
 
 router.delete('/:groupId', requireAuth, async(req, res, next)=>{
@@ -492,7 +495,7 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
             memberId:memberMake.memberId,
             status:memberMake.status
         }
-        memberMake.save()
+        await memberMake.save()
         return res.json(memberReturn)
 
     }
@@ -508,7 +511,7 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
             memberId:memberMake.memberId,
             status:memberMake.status
         }
-        memberMake.save()
+        await memberMake.save()
         return res.json(memberReturn)
     }
     }else{
