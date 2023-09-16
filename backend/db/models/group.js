@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
           models.User,
           { through: models.Membership,
           foreignKey:'groupId',
+          onDelete: 'Cascade',
           otherKey:'userId'}
         )
         Group.hasMany(
@@ -62,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull:false,
       validate: {
         len:{
-        args:[1,50],
+        args:[50,99999],
         msg:"About must be 50 characters or more"
       }
     }},
