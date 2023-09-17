@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       User.hasMany(
         models.Group,{
+          as: 'Organizer',
           foreignKey:'organizerId'
         }
       )

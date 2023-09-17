@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         constraints: false
       });
       Image.belongsTo(models.Group, {
+        as:'GroupImages',
         foreignKey: 'imageableId',
         constraints: false
       });

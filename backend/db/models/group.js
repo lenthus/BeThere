@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Group.belongsTo(
         models.User,{
+        as:'Organizer',
         foreignKey:'organizerId'
         })
 
@@ -34,6 +35,7 @@ module.exports = (sequelize, DataTypes) => {
         )
         Group.hasMany(
           models.Image,{
+            as:'GroupImages',
             foreignKey:"imageableId",
             constraints: false,
             scope: {
