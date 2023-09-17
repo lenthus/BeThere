@@ -52,7 +52,8 @@ router.get('/current', requireAuth, async(req,res,next)=>{
             organizerId:userId
         },
         include:[
-            {model:Image}
+            {model:Image,
+            as:'GroupImages'}
         ]
 
     })
@@ -91,7 +92,8 @@ router.get('/current', requireAuth, async(req,res,next)=>{
             id:memberShip.groupId
         },
         include:[
-            {model:Image}
+            {model:Image,
+            as:'GroupImages'}
         ]
     })
         const members = await Membership.count({where:{groupId:getMemGroup.id}})
@@ -128,8 +130,11 @@ router.get('/:groupId', async(req,res,next)=>{
     const getGroups = await Group.findOne({
         where:{ id:groupId },
         include: [
-            {model:Image},
-            {model:User}
+            {model:Image,
+            as:'GroupImages'},
+            {model:User,
+            as:'Organizer'},
+            {model:Venue}
         ]
     })
 
@@ -168,7 +173,7 @@ router.post('/:groupId/images',requireAuth, async(req, res, next)=>{
     if (groupCheck){
 
     if (groupCheck.organizerId === userId){
-    const imgCreate = await groupCheck.createImage({
+    const imgCreate = await groupCheck.createGroupImage({
     url,
     preview,
     imageType: 'Group'
