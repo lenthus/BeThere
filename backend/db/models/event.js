@@ -44,11 +44,21 @@ module.exports = (sequelize, DataTypes) => {
     },
     venueId:{
     type:DataTypes.INTEGER,
+    allowNull:false
     },
     name:{
     type:DataTypes.STRING,
+    allowNull:false,
     validate:{
+      len:{
+        args:[5,100],
+        msg:"Name must be at least 5 characters"
+      },
       notEmpty:{
+        args:true,
+        msg:"Name must be at least 5 characters"
+      },
+      notNull:{
         args:true,
         msg:"Name must be at least 5 characters"
       }
@@ -56,15 +66,21 @@ module.exports = (sequelize, DataTypes) => {
     },
     type:{
     type:DataTypes.STRING,
+    allowNull:false,
     validate:{
       isIn:{
         args:[['Online', 'In person']],
+        msg:"Type must be Online or In person",
+      },
+      notNull:{
+        args:true,
         msg:"Type must be Online or In person",
       }
     }
     },
     startDate:{
     type:DataTypes.DATE,
+    allowNull:false,
     validate: {
       customValidator(value) {
         if (new Date(value) < new Date()) {
@@ -75,26 +91,38 @@ module.exports = (sequelize, DataTypes) => {
     },
     endDate:{
     type:DataTypes.DATE,
+    allowNull:false,
     validate: {
       customValidator(value) {
         if (new Date(value) < new Date(this.startDate)) {
           throw new Error("End date is less than start date");
         }
       },
+      notNull:{
+        args:true,
+        msg:"End date is less than start date"
+      }
     },
     },
     capacity:{
     type:DataTypes.INTEGER,
+    allowNull:false,
     validate:{
       isInt:{
+        args:true,
         msg:"Capacity must be an integer"
       }
     }
     },
     description:{
     type:DataTypes.STRING,
+    allowNull:false,
     validate:{
       notEmpty:{
+        args:true,
+        msg:"Description is required",
+      },
+      notNull:{
         args:true,
         msg:"Description is required",
       }
@@ -102,9 +130,14 @@ module.exports = (sequelize, DataTypes) => {
     },
     price:{
     type:DataTypes.DECIMAL,
+    allowNull:false,
     validate:{
       isDecimal:{
-
+        args:true,
+        msg:"Price is invalid"
+      },
+      notNull:{
+        args:true,
         msg:"Price is invalid"
       }
     }

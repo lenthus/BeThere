@@ -188,8 +188,8 @@ router.post('/:groupId/images',requireAuth, async(req, res, next)=>{
     return res.json(imgReturn)
 }
     else{
-        const err = new Error("Group couldn't be found")
-        err.status = 404
+        const err = new Error("Forbidden")
+        err.status = 403
         next(err)
     }
 }else{
@@ -225,9 +225,9 @@ router.put('/:groupId', requireAuth, async(req, res, next)=>{
    return res.json(groupEdit)}
     else
    {
-    const err = new Error("Group couldn't be found")
-    err.status = 404
-    next(err)
+    const err = new Error("Forbidden")
+        err.status = 403
+        next(err)
    }
 }})
 
@@ -242,8 +242,8 @@ router.delete('/:groupId', requireAuth, async(req, res, next)=>{
 
             return res.json({"message":"Successfully deleted"})
         }else{
-            const err = new Error("Group couldn't be found")
-            err.status = 404
+            const err = new Error("Forbidden")
+            err.status = 403
             next(err)
         }
     }else{
@@ -283,6 +283,10 @@ router.post('/:groupId/venues', requireAuth, async(req, res, next)=>{
             lng:venueBuild.lng
         }
         return res.json(venReturn)
+    }else{
+        const err= new Error("Forbidden")
+        err.status = 403
+        next(err)
     }}else{
     const err= new Error("Group couldn't be found")
     err.status = 404
@@ -318,10 +322,10 @@ router.get('/:groupId/venues', requireAuth, async(req, res, next)=>{
         }
         venueReturn.push(venReturn)
     }
-        return res.json({"Venue":venueReturn})
+        return res.json({"Venues":venueReturn})
     }else{
-        const err= new Error("Group couldn't be found")
-        err.status = 404
+        const err = new Error("Forbidden")
+        err.status = 403
         next(err)
     }}else{
     const err= new Error("Group couldn't be found")
@@ -417,6 +421,10 @@ router.post('/:groupId/events', requireAuth, async(req, res, next)=>{
             endDate:eventBuild.endDate
         }
         return res.json(eventReturn)
+    }else{
+        const err = new Error("Forbidden")
+        err.status = 403
+        next(err)
     }}else{
     const err= new Error("Group couldn't be found")
     err.status = 404
@@ -544,13 +552,13 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
     const memberGet = await Membership.findOne({where:{userId}})
     if (memberGet){
     if(groupCheck.organizerId!==userId&&memberGet.status!=="co-host"){
-        const err= new Error("Group couldn't be found")
+        const err = new Error("Forbidden")
         err.status = 403
         next(err)
     }
     //membership change options
     if(memberGet.status==="co-host"&&status==="co-host"){
-        const err = new Error("Must be Organizer")
+        const err = new Error("Forbidden")
         err.status = 403
         next(err)
     }
@@ -605,9 +613,9 @@ router.delete('/:groupId/memberShip', requireAuth, async (req, res, next)=>{
           next(err)
     }
     if(groupCheck.organizerId!==userId&&memberCheck(userId,groupId)!=="co-host"&&memberId==userId){
-        const err = new Error("Group couldn't be found")
-          err.status = 404
-          next(err)
+        const err = new Error("Forbidden")
+        err.status = 403
+        next(err)
     }
 
 

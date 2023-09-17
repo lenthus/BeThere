@@ -123,8 +123,8 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
     return res.json(imgReturn)
 }
     else{
-        const err = new Error("Event couldn't be found")
-        err.status = 404
+        const err = new Error("Forbidden")
+        err.status = 403
         next(err)
     }
 }else{
@@ -235,6 +235,10 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
         }
 
         return res.json(eventReturn)
+    }else{
+        const err = new Error("Forbidden")
+        err.status = 403
+        next(err)
     }}})
 
 router.delete('/:eventId', requireAuth, async (req, res, next)=>{
@@ -258,9 +262,9 @@ router.delete('/:eventId', requireAuth, async (req, res, next)=>{
     return res.json("Successfully deleted")
     }
     else{
-    const err= new Error("Event couldn't be found")
-    err.status = 404
-    next(err)
+        const err = new Error("Forbidden")
+        err.status = 403
+        next(err)
 }
 })
 
@@ -310,6 +314,10 @@ router.post('/:eventId/attendees', requireAuth, async(req,res,next)=>{
             status:attendCreate.status
         }
         return res.json(eventReturn)
+    }else{
+        const err = new Error("Forbidden")
+        err.status = 403
+        next(err)
     }
 })
 
@@ -400,9 +408,9 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
 
         if (attendanceGet){
         if(groupCheck.organizerId!==userId||memberGet.status!=="co-host"){
-            const err= new Error("Event couldn't be found")
-            err.status = 404
-            next(err)
+            const err = new Error("Forbidden")
+        err.status = 403
+        next(err)
         }
         if((groupCheck.organizerId===userId||memberGet.status==="co-host")&&status==="attending"){
             const memberMake = await attendanceGet.set({
