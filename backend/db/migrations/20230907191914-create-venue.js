@@ -24,12 +24,15 @@ module.exports = {
         }
       },
       address: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull:false,
       },
       city: {
+        allowNull:false,
         type: Sequelize.STRING
       },
       state: {
+        allowNull:false,
         type: Sequelize.STRING
       },
       lat: {

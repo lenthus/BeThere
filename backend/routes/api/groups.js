@@ -134,16 +134,17 @@ router.get('/:groupId', async(req,res,next)=>{
             as:'GroupImages'},
             {model:User,
             as:'Organizer'},
-            {model:Venue}
+            {model:Venue},
         ]
     })
-
+    const members = await Membership.count({where:{groupId}})
     if (!getGroups) {
     const err = new Error("Group couldn't be found")
     err.status = 404
     next(err)
 }else{
-
+    const groupReturn = {}
+    getGroups.dataValues["numMembers"] = members
     return res.json(getGroups)
 }})
 
@@ -224,8 +225,8 @@ router.put('/:groupId', requireAuth, async(req, res, next)=>{
    return res.json(groupEdit)}
     else
    {
-    const err = new Error("Bad Request")
-    err.status = 400
+    const err = new Error("Group couldn't be found")
+    err.status = 404
     next(err)
    }
 }})

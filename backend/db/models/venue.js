@@ -29,8 +29,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     address:{
     type:DataTypes.STRING,
+    allowNull:false,
     validate:{
       notEmpty:{
+        args:true,
+        msg:"Street address is required"
+      },
+      notNull:{
         args:true,
         msg:"Street address is required"
       }
@@ -38,8 +43,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     city:{
     type:DataTypes.STRING,
+    allowNull:false,
     validate:{
       notEmpty:{
+        args:true,
+        msg:"City is required"
+      },
+      notNull:{
         args:true,
         msg:"City is required"
       }
@@ -48,8 +58,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     state:{
     type:DataTypes.STRING,
+    allowNull:false,
     validate:{
       notEmpty:{
+        args:true,
+        msg:"State is required"
+      },
+      notNull:{
         args:true,
         msg:"State is required"
       }
@@ -86,6 +101,11 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Venue',
+    defaultScope: {
+      attributes: {
+        exclude: ["createdAt", "updatedAt"]
+      }
+    }
   });
   return Venue;
 };
