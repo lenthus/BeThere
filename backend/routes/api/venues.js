@@ -11,9 +11,14 @@ router.put('/:venueId', requireAuth, async(req, res, next)=>{
     const venueId = req.params.venueId
     const {address,lat,lng,city,state} = req.body
     const venFind = await Venue.findByPk(venueId)
-    const groupFind = await Group.findByPk(venFind.groupId)
-    console.log(memberCheck(userId,venFind.groupId).status)
 
+    if(!venFind){
+        const err = new Error("Venue couldn't be found")
+        err.status = 404
+        next(err)
+    }
+
+    const groupFind = await Group.findByPk(venFind.groupId)
     if (groupFind){
     if (groupFind.organizerId === userId||memberCheck(userId,venFind.groupId).status === "co-host"){
     const venEdit = await venFind.set({
@@ -24,6 +29,8 @@ router.put('/:venueId', requireAuth, async(req, res, next)=>{
         lng
     })
     const venReturn = {
+        id:venEdit.id,
+        groupId:venEdit.groupId,
         address:venEdit.address,
         city:venEdit.city,
         state:venEdit.state,
@@ -33,8 +40,8 @@ router.put('/:venueId', requireAuth, async(req, res, next)=>{
     await venEdit.save()
    return res.json(venReturn)} else
    {
-    const err = new Error("Bad Request")
-    err.status = 404
+    const err = new Error("Forbidden")
+    err.status = 403
     next(err)
    }
 }else{
