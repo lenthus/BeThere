@@ -41,7 +41,7 @@ router.get('/', async(req,res)=>{
     groupsReturn.push(newGroup)
    }
 
-    return res.json(groupsReturn)
+    return res.json({"Groups":groupsReturn})
 })
 
 router.get('/current', requireAuth, async(req,res,next)=>{
