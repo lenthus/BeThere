@@ -126,7 +126,7 @@ router.get('/:groupId', async(req,res,next)=>{
     const groupId = req.params.groupId
 
     const getGroups = await Group.findOne({
-        where:{ Id:groupId },
+        where:{ id:groupId },
         include: [
             {model:Image},
             {model:User}
