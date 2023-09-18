@@ -41,7 +41,7 @@ router.get('/', async(req,res)=>{
     groupsReturn.push(newGroup)
    }
 
-    return res.json(groupsReturn)
+    return res.json({"Groups":groupsReturn})
 })
 
 router.get('/current', requireAuth, async(req,res,next)=>{
@@ -221,8 +221,9 @@ router.put('/:groupId', requireAuth, async(req, res, next)=>{
         state,
         organizerId:userId
     })
-    await groupEdit.save()
-   return res.json(groupEdit)}
+   const groupReturn = await groupEdit.save()
+   return res.json(groupReturn)
+    }
     else
    {
     const err = new Error("Forbidden")
@@ -382,7 +383,7 @@ router.get('/:groupId/events', async(req, res, next)=>{
         }
         evReturn.push(evenReturn)
     }
-    return res.json(evReturn)
+    return res.json({"Events":evReturn})
 })
 router.post('/:groupId/events', requireAuth, async(req, res, next)=>{
     const userId = req.user.id
@@ -393,6 +394,13 @@ router.post('/:groupId/events', requireAuth, async(req, res, next)=>{
         {userId,
         groupId}
     })
+    const venueCheck = await Venue.findByPk(venueId)
+
+    if(!venueCheck){
+        const err = new Error("Venue does not exist")
+        err.status = 403
+        next(err)
+    }
 
     const groupCheck = await Group.findByPk(groupId)
     if (groupCheck){
@@ -606,13 +614,14 @@ router.delete('/:groupId/memberShip', requireAuth, async (req, res, next)=>{
 
     const groupCheck = await Group.findByPk(groupId)
     const userCheck = await User.findByPk(memberId)
+    const membershipCheck = await Membership.findOne({where:{userId:memberId,groupId:groupId}})
 
     if (!groupCheck){
         const err = new Error("Group couldn't be found")
           err.status = 404
           next(err)
     }
-    if(groupCheck.organizerId!==userId&&memberCheck(userId,groupId)!=="co-host"&&memberId==userId){
+    if(groupCheck.organizerId!==userId&&membershipCheck!=="co-host"&&memberId==userId){
         const err = new Error("Forbidden")
         err.status = 403
         next(err)
@@ -626,7 +635,7 @@ router.delete('/:groupId/memberShip', requireAuth, async (req, res, next)=>{
         err.errors = {"memberId":"User couldn't be found"}
         return res.json(err)
     }
-    if(!memberCheck(memberId,groupId)){
+    if(!membershipCheck){
         const err = new Error("Membership does not exist for this User")
           err.status = 400
           next(err)

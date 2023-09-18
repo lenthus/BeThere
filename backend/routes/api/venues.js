@@ -37,8 +37,9 @@ router.put('/:venueId', requireAuth, async(req, res, next)=>{
         lat:venEdit.lat,
         lng:venEdit.lng
     }
-    await venEdit.save()
-   return res.json(venReturn)} else
+   const venueReturn = await venEdit.save()
+   return res.json(venueReturn)
+    } else
    {
     const err = new Error("Forbidden")
     err.status = 403

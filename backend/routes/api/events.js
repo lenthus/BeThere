@@ -2,7 +2,6 @@ const express = require('express');
 const { Op } = require('sequelize');
 const {Event, Venue, Membership, Group, Image, Attendee, User} = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
-const { memberCheck } = require('../../utils/checks');
 const router = express.Router();
 const { validationResult, check } = require('express-validator');
 
@@ -16,7 +15,7 @@ check('startDate').isDate().withMessage("Start date must be a valid datetime")
 
 router.get('/',validateEvent, async(req,res)=>{
     let {page, size, name, type, startDate} = req.query
-
+    const evReturn = []
     let counter = 0
 
     const error = validationResult(req)
@@ -41,7 +40,7 @@ router.get('/',validateEvent, async(req,res)=>{
             size = 20
         }
     }else{
-        size = 1
+        size = 20
     }
     console.log(page)
     console.log(size)
@@ -59,7 +58,7 @@ router.get('/',validateEvent, async(req,res)=>{
         ],
         limit,offset
     })
-    const evReturn = []
+
     for (const event of getAllEvents){
         let img = null
         const numMembers = await Attendee.count({where:{eventId:event.id}})
@@ -92,7 +91,7 @@ router.get('/',validateEvent, async(req,res)=>{
         }
         evReturn.push(evenReturn)
     }
-    return res.json(evReturn)
+    return res.json({"Events":evReturn})
 })
 
 
@@ -102,13 +101,21 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
     const {url, preview} = req.body
 
     const eventCheck = await Event.findByPk(eventId)
-    console.log(eventCheck)
+    const membershipCheck = await Membership.findAll({where:
+        {userId,
+        groupId}
+    })
+    if(!eventCheck){
+        const err = new Error("Event couldn't be found")
+        err.status = 404
+        next(err)
+    }
+
     const getAttendee = await Attendee.findOne({where:{userId}})
     const groupCheck = await Group.findByPk(eventCheck.groupId)
 
     if (eventCheck){
-
-    if (getAttendee||memberCheck(userId,eventCheck.groupId)==="co-host"||groupCheck.organizerId===userId){
+    if (getAttendee||membershipCheck==="co-host"||groupCheck.organizerId===userId){
     const imgCreate = await eventCheck.createImage({
     url,
     preview,
@@ -128,7 +135,7 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
         next(err)
     }
 }else{
-    const err = new Error("Event couldn't be found2")
+    const err = new Error("Event couldn't be found")
     err.status = 404
     next(err)
 }})
@@ -157,6 +164,7 @@ router.get('/:eventId', async(req, res, next)=>{
             groupId:event.groupId,
             venueId:event.venueId,
             name:event.name,
+            description:event.description,
             type:event.type,
             startDate:event.startDate,
             endDate:event.endDate,
@@ -165,12 +173,16 @@ router.get('/:eventId', async(req, res, next)=>{
             Group:{
                 id:event.Group.id,
             name:event.Group.name,
+            private:event.Group.private,
             city:event.Group.city,
             state:event.Group.state},
             Venue:{
                 id:event.Venue.id,
+                address:event.Venue.address,
                 city:event.Venue.city,
-                state:event.Venue.state
+                state:event.Venue.state,
+                lat:event.Venue.lat,
+                lng:event.Venue.lng
             }
 
         }
@@ -182,27 +194,31 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
     const userId = req.user.id
     const eventId = req.params.eventId
     const {venueId,name,type,capacity,price,description,startDate,endDate} =req.body
-    const getGroupId = await Venue.findByPk(venueId)
     const eventChecker = await Event.findByPk(eventId)
-    const groupId = getGroupId.groupId
 
-    if (!getGroupId){
-        const err = new Error("Venue couldn't be found")
-        err.status = 404
-        next(err)
-    }
+
 
     if (!eventChecker){
           const err = new Error("Event couldn't be found")
                 err.status = 404
                 next(err)
     }
+    const getGroupId = await Venue.findByPk(venueId)
+
+    if (!getGroupId){
+        const err = new Error("Venue couldn't be found")
+        err.status = 404
+        next(err)
+    }
+    const groupCheck = await Group.findByPk(getGroupId.groupId)
+
+    const groupId = getGroupId.groupId
 
     const membershipCheck = await Membership.findAll({where:
         {userId,
         groupId}
     })
-    const groupCheck = await Group.findByPk(groupId)
+
 
     if (groupCheck){
     if (groupCheck.organizerId===userId||membershipCheck.status==='co-host'){
@@ -219,22 +235,7 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
            endDate
 
         })
-        eventBuild.save()
-
-        const eventReturn = {
-            id:eventBuild.id,
-            venueId:eventBuild.venueId,
-            groupId:eventBuild.groupId,
-            name:eventBuild.name,
-            type:eventBuild.type,
-            capacity:eventBuild.capacity,
-            price:eventBuild.price,
-            description:eventBuild.description,
-            startDate:eventBuild.startDate,
-            endDate:eventBuild.endDate
-        }
-
-        return res.json(eventReturn)
+        return (eventBuild.save())
     }else{
         const err = new Error("Forbidden")
         err.status = 403
@@ -246,7 +247,11 @@ router.delete('/:eventId', requireAuth, async (req, res, next)=>{
     const eventId = req.params.eventId
 
     const eventCheck = await Event.findByPk(eventId)
-
+    if (!eventCheck){
+        const err= new Error("Event couldn't be found")
+        err.status = 404
+        next(err)
+    }
 
     const groupId = eventCheck.groupId
     const membershipCheck = await Membership.findAll({where:
@@ -268,7 +273,7 @@ router.delete('/:eventId', requireAuth, async (req, res, next)=>{
 }
 })
 
-router.post('/:eventId/attendees', requireAuth, async(req,res,next)=>{
+router.post('/:eventId/attendance', requireAuth, async(req,res,next)=>{
     const userId = req.user.id
     const eventId = req.params.eventId
 
@@ -300,9 +305,9 @@ router.post('/:eventId/attendees', requireAuth, async(req,res,next)=>{
         next(err)
         }
     }
+    const membershipCheck = await Membership.findOne({where:{userId,groupId}})
 
-
-    if (memberCheck(userId,groupId).status==="co-host"||memberCheck(userId,groupId).status==="member"||groupCheck.organizerId===userId){
+    if (await membershipCheck.status==="co-host"||await membershipCheck.status==="member"||groupCheck.organizerId===userId){
         const attendCreate = await Attendee.create({
             userId:userId,
             eventId:eventId,
@@ -310,7 +315,6 @@ router.post('/:eventId/attendees', requireAuth, async(req,res,next)=>{
         })
         eventReturn ={
             userId:userId,
-            eventId:eventId,
             status:attendCreate.status
         }
         return res.json(eventReturn)
@@ -325,16 +329,18 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
     const userId = req.user.id
     const eventId = req.params.eventId
     const eventCheck = await Event.findByPk(eventId)
+
+    if(!eventCheck){
+        const err = new Error("Event couldn't be found")
+        err.status = 404
+        next(err)
+    }
     const groupId = eventCheck.groupId
 
     const groupCheck = await Group.findByPk(groupId)
-    if(!eventCheck){
-        const err= new Error("Event couldn't be found")
-    err.status = 404
-    next(err)
-    }
+    const membershipCheck = await Membership.findOne({where:{userId,groupId}})
 
-    if (groupCheck.organizerId === userId||memberCheck(userId,groupId)==="co-host"){
+    if (groupCheck.organizerId === userId||membershipCheck==="co-host"){
        const memberList= await Attendee.findAll({
          where:{eventId:eventId},
     })
@@ -342,7 +348,7 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
         for(const user of memberList){
             const userDetails = await User.findByPk(user.userId)
              let use={
-                id:userId,
+                id:user.userId,
                 firstName:userDetails.firstName,
                 lastName:userDetails.lastName,
                 Attendance:{
@@ -362,7 +368,7 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
             if (user.status!=="pending"){
                const userDetails = await User.findByPk(user.userId)
                 let use={
-                   id:userId,
+                   id:user.id,
                    firstName:userDetails.firstName,
                    lastName:userDetails.lastName,
                    Attendance:{
