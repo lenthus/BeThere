@@ -202,6 +202,7 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
     const {venueId,name,type,capacity,price,description,startDate,endDate} =req.body
     const eventChecker = await Event.findByPk(eventId)
 
+
     if (!eventChecker){
           const err = new Error("Event couldn't be found")
                 err.status = 404
@@ -218,7 +219,7 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
 
     const groupId = getGroupId.groupId
 
-    const membershipCheck = await Membership.findAll({where:
+    const membershipCheck = await Membership.findOne({where:
         {userId,
         groupId}
     })
@@ -239,7 +240,7 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
 
         })
         return (eventBuild.save())
-    }else{
+    }else {
         const err = new Error("Forbidden")
         err.status = 403
         next(err)
