@@ -517,9 +517,12 @@ router.post('/:groupId/membership', requireAuth, async (req, res, next)=>{
     const memberGet = await Membership.findOne({where:{groupId,userId}})
     if (memberGet){
     if(memberGet.status==="pending"){
-        const err= new Error("Membership has already been requested")
-        err.status = 400
-        next(err)
+        // const err= new Error("Membership has already been requested")
+        // err.status = 400
+        // next(err)
+        return res.status(400).json({
+            "message": "Membership has already been requested"
+          })
     }
     if(memberGet.status==="member"||memberGet.status==="co-host"){
         const err= new Error("User is already a member of the group")
