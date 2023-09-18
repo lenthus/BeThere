@@ -2,7 +2,7 @@ const express = require('express');
 const { Op } = require('sequelize');
 const { Event, Group, Image, Membership,User,Venue,Attendee} = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
-const { memberCheck } = require('../../utils/checks');
+
 const router = express.Router();
 
 router.get('/', async(req,res)=>{
@@ -451,8 +451,9 @@ router.get('/:groupId/members', async(req, res, next)=>{
     err.status = 404
     next(err)
     }
+    const membershipCheck = await Membership.findOne({where:{userId:userId,groupId:groupId}})
 
-    if (groupCheck.organizerId === userId||memberCheck(userId,groupId)==="co-host"){
+    if (groupCheck.organizerId === userId||membershipCheck==="co-host"){
        const memberList= await Membership.findAll({
          where:{groupId:groupId},
     })
