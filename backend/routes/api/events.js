@@ -100,7 +100,7 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
     const userId = req.user.id
     const {url, preview} = req.body
     const groupCheck = await Group.findByPk(eventCheck.groupId)
-    const groupId = eventCheck.id
+    const groupId = groupCheck.id
 
     const eventCheck = await Event.findByPk(eventId)
     const membershipCheck = await Membership.findAll({where:
@@ -113,7 +113,7 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
         next(err)
     }
 
-    const getAttendee = await Attendee.findOne({where:{userId}})
+    const getAttendee = await Attendee.findOne({where:{userId:userId,eventId:eventId}})
 
 
     if (eventCheck){
