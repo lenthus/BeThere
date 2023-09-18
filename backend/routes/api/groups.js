@@ -173,6 +173,13 @@ router.post('/:groupId/images',requireAuth, async(req, res, next)=>{
     const groupCheck = await Group.findByPk(groupId)
     if (groupCheck){
 
+    const imageCheck = await Image.findOne({where:{imageableId:groupId,imageType:"Group",preview:true}})
+    if(imageCheck){
+        const err = new Error("Group preview image already exists")
+    err.status = 400
+    next(err)
+    }
+
     if (groupCheck.organizerId === userId){
     const imgCreate = await groupCheck.createGroupImage({
     url,
@@ -541,7 +548,7 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
         userId:memberId,
         groupId:groupId
     }})
-    console.log(membershipGet)
+
     if(!membershipGet){
         const err = new Error("Membership between the user and the group does not exist")
         err.status = 403
@@ -558,8 +565,9 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
         err.status = 403
         next(err)
     }
-    const memberGet = await Membership.findOne({where:{userId}})
-    if (memberGet){
+    const memberGet = await Membership.findOne({where:{userId:userId,groupId:groupId}})
+
+
     if(groupCheck.organizerId!==userId&&memberGet.status!=="co-host"){
         const err = new Error("Forbidden")
         err.status = 403
@@ -600,12 +608,7 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
         await memberMake.save()
         return res.json(memberReturn)
     }
-    }else{
-        const err= new Error("Group couldn't be found")
-        err.status = 403
-        next(err)
-
-    }
+    
 })
 
 router.delete('/:groupId/memberShip', requireAuth, async (req, res, next)=>{

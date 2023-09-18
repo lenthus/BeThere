@@ -22,8 +22,9 @@ router.delete('/:imageId', requireAuth, async (req, res, next)=>{
         next(err)
     }
     const groupCheck = await Group.findByPk(imageCheck.imageableId)
+    const membershipCheck = Membership.findOne({where:{userId:userId,groupId:imageCheck.imageableId}})
 
-    if(groupCheck.organizerId!==userId && memberCheck(userId,groupCheck.id)!=="co-host"){
+    if(groupCheck.organizerId!==userId && membershipCheck.status!=="co-host"){
         const err = new Error("Forbidden")
         err.status = 403
         next(err)
