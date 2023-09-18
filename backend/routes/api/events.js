@@ -196,8 +196,6 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
     const {venueId,name,type,capacity,price,description,startDate,endDate} =req.body
     const eventChecker = await Event.findByPk(eventId)
 
-
-
     if (!eventChecker){
           const err = new Error("Event couldn't be found")
                 err.status = 404
@@ -218,7 +216,6 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
         {userId,
         groupId}
     })
-
 
     if (groupCheck){
     if (groupCheck.organizerId===userId||membershipCheck.status==='co-host'){
@@ -287,7 +284,6 @@ router.post('/:eventId/attendance', requireAuth, async(req,res,next)=>{
         }
     const groupId = eventCheck.groupId
 
-
     const groupCheck = await Group.findByPk(groupId)
     const attendeeCheck = await Attendee.findOne({where:{
         eventId:eventId,
@@ -299,7 +295,7 @@ router.post('/:eventId/attendance', requireAuth, async(req,res,next)=>{
         err.status = 400
         next(err)
         }
-        if(attendeeCheck.status==="accepted"){
+        if(attendeeCheck.status==="attending"){
             const err= new Error("User is already an attendee of the event")
         err.status = 400
         next(err)
@@ -307,7 +303,8 @@ router.post('/:eventId/attendance', requireAuth, async(req,res,next)=>{
     }
     const membershipCheck = await Membership.findOne({where:{userId,groupId}})
 
-    if (await membershipCheck.status==="co-host"||await membershipCheck.status==="member"||groupCheck.organizerId===userId){
+    if (membershipCheck){
+    if (membershipCheck.status==="co-host"||membershipCheck.status==="member"){
         const attendCreate = await Attendee.create({
             userId:userId,
             eventId:eventId,
@@ -318,6 +315,19 @@ router.post('/:eventId/attendance', requireAuth, async(req,res,next)=>{
             status:attendCreate.status
         }
         return res.json(eventReturn)
+    }
+    if (groupCheck.organizerId===userId){
+        const attendCreate = await Attendee.create({
+            userId:userId,
+            eventId:eventId,
+            status:"pending"
+        })
+        eventReturn ={
+            userId:userId,
+            status:attendCreate.status
+        }
+        return res.json(eventReturn)
+    }
     }else{
         const err = new Error("Forbidden")
         err.status = 403
@@ -392,7 +402,7 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
             userId:memberId,
             eventId:eventId
         }})
-        console.log(attendanceGet,memberId,eventId)
+
         if(!attendanceGet){
             const err = new Error("Attendance between the user and the event does not exist")
             err.status = 404
@@ -412,13 +422,9 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
         const groupCheck = await Group.findByPk(eventCheck.groupId)
         const memberGet = await Membership.findOne({where:{userId}})
 
-        if (attendanceGet){
-        if(groupCheck.organizerId!==userId||memberGet.status!=="co-host"){
-            const err = new Error("Forbidden")
-        err.status = 403
-        next(err)
-        }
-        if((groupCheck.organizerId===userId||memberGet.status==="co-host")&&status==="attending"){
+        if (groupCheck){
+        if(groupCheck.organizerId===userId){
+
             const memberMake = await attendanceGet.set({
                 status:"attending"
             })
@@ -431,9 +437,27 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
             memberMake.save()
             return res.json(memberReturn)
 
-        }}
+        }
+        if (memberGet.status==="co-host"&&status==="attending"){
+            const memberMake = await attendanceGet.set({
+                status:"attending"
+            })
+            const memberReturn =  {
+                id:memberMake.id,
+                eventId:eventId,
+                UserId:memberId,
+                status:memberMake.status
+            }
+            memberMake.save()
+            return res.json(memberReturn)
 
-    })
+        }
+        if(groupCheck.organizerId!==userId||memberGet.status!=="co-host"){
+            const err = new Error("Forbidden")
+        err.status = 403
+        next(err)
+        }
+    }})
     router.delete('/:eventId/attendance', requireAuth, async (req, res, next)=>{
         const userId = req.user.id
         const eventId = req.params.eventId
