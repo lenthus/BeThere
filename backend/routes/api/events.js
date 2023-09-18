@@ -457,12 +457,12 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
                 status:"attending"
             })
             const memberReturn =  {
-                id:memberMake.id,
+                id:memberId,
                 eventId:eventId,
                 UserId:memberId,
                 status:memberMake.status
             }
-            memberMake.save()
+            await memberMake.save()
             return res.json(memberReturn)
 
         }
@@ -471,12 +471,12 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
                 status:"attending"
             })
             const memberReturn =  {
-                id:memberMake.id,
+                id:memberId,
                 eventId:eventId,
                 UserId:memberId,
                 status:memberMake.status
             }
-            memberMake.save()
+            await memberMake.save()
             return res.json(memberReturn)
 
         }
