@@ -223,10 +223,12 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
         {userId,
         groupId}
     })
-
+    if(groupCheck.organizerId!==userId&&membershipCheck.status!=='co-host'){
+        const err = new Error("Forbidden")
+        err.status = 403
+        next(err)
+    }
     if (groupCheck){
-    if (groupCheck.organizerId===userId||membershipCheck.status==='co-host'){
-
         const getEvent = await Event.findByPk(eventId)
         const eventBuild = getEvent.set({
            venueId,
@@ -240,11 +242,11 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
 
         })
         return (eventBuild.save())
+
     }else {
         const err = new Error("Forbidden")
         err.status = 403
-        next(err)
-    }}})
+        next(err)}})
 
 router.delete('/:eventId', requireAuth, async (req, res, next)=>{
     const userId = req.user.id
