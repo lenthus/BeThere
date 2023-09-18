@@ -554,7 +554,8 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
         err.status = 403
         next(err)
     }
-    groupCheck = await Group.findByPk(groupId)
+    const groupCheck = await Group.findByPk(groupId)
+
     if(!groupCheck){
         const err= new Error("Group couldn't be found")
     err.status = 404
@@ -566,8 +567,6 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
         next(err)
     }
     const memberGet = await Membership.findOne({where:{userId:userId,groupId:groupId}})
-
-
 
     //membership change options
     if(memberGet){
