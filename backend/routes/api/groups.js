@@ -575,7 +575,7 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
         err.status = 403
         next(err)
     }
-    if((groupCheck.organizerId===userId||memberGet.status==="co-host")&&status==="member"){
+    if((memberGet.status==="co-host")&&status==="member"){
         const memberMake = await membershipGet.set({
             status:"member"
         })
@@ -600,6 +600,20 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
         next(err)
     }
     }
+    if((groupCheck.organizerId===userId)&&status==="member"){
+        const memberMake = await membershipGet.set({
+            status:"member"
+        })
+    const memberReturn =  {
+        id:memberMake.id,
+        groupId:memberMake.groupId,
+        memberId:memberMake.memberId,
+        status:memberMake.status
+    }
+
+    await memberMake.save()
+    return res.json(memberReturn)
+    }
     if (groupCheck.organizerId===userId&&status==="co-host"){
         const memberMake = await membershipGet.set({
             groupId:groupId,
@@ -615,7 +629,9 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
         await memberMake.save()
         return res.json(memberReturn)
     }
-
+    const err = new Error("Forbidden")
+    err.status = 403
+    next(err)
 })
 
 router.delete('/:groupId/memberShip', requireAuth, async (req, res, next)=>{
