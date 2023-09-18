@@ -398,12 +398,10 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
 
         return res.json({"Attendees":Members})
     }else{
-        const memberList= await Membership.findAll({
-            where:{groupId:groupId},
+        const memberList= await Attendee.findAll({
+            where:{eventId:eventId},
        })
-       let Members = []
-       if(memberList){
-
+           let Members = []
            for(let user of memberList){
             if (user.status!=="pending"){
                const userDetails = await User.findByPk(user.userId)
@@ -417,7 +415,7 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
                }
                Members.push(use)
            }}
-        }
+
            return res.json({"Attendees":Members})
 
      }
