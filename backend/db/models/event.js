@@ -111,6 +111,10 @@ module.exports = (sequelize, DataTypes) => {
       isInt:{
         args:true,
         msg:"Capacity must be an integer"
+      },
+      notNull:{
+        args:true,
+        msg:"Capacity must be an integer"
       }
     }
     },
