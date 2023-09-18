@@ -195,7 +195,7 @@ router.get('/:eventId', async(req, res, next)=>{
 
     return res.json(evenReturn)
 })
-//! Working Here
+
 router.put('/:eventId', requireAuth, async(req, res, next)=>{
     const userId = req.user.id
     const eventId = req.params.eventId
@@ -344,7 +344,7 @@ router.post('/:eventId/attendance', requireAuth, async(req,res,next)=>{
             status:attendCreate.status
         }
         return res.json(eventReturn)
-    }
+    }}
     if (groupCheck.organizerId===userId){
         const attendCreate = await Attendee.create({
             userId:userId,
@@ -356,7 +356,6 @@ router.post('/:eventId/attendance', requireAuth, async(req,res,next)=>{
             status:attendCreate.status
         }
         return res.json(eventReturn)
-    }
     }else{
         const err = new Error("Forbidden")
         err.status = 403
