@@ -580,9 +580,9 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
             status:"member"
         })
         const memberReturn =  {
-            id:memberMake.id,
+            id:membershipGet.id,
             groupId:memberMake.groupId,
-            memberId:memberMake.memberId,
+            memberId:memberId,
             status:memberMake.status
         }
         await memberMake.save()
@@ -605,9 +605,9 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
             status:"member"
         })
     const memberReturn =  {
-        id:memberMake.id,
+        id:membershipGet.id,
         groupId:memberMake.groupId,
-        memberId:memberMake.memberId,
+        memberId:memberId,
         status:memberMake.status
     }
 
@@ -621,9 +621,9 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
             status:"co-host"
         })
         const memberReturn =  {
-            id:memberMake.id,
+            id:membershipGet.id,
             groupId:memberMake.groupId,
-            memberId:memberMake.memberId,
+            memberId:memberId,
             status:memberMake.status
         }
         await memberMake.save()
