@@ -10,7 +10,7 @@ const memberCheck = async (userId,groupId) => {
 }})
     return check
 }
-const superCheck = async (userId,groupId) =>{
+const superCheck = async function (userId,groupId) {
     const checked = null
 
     const groupFind = await Group.findByPk(groupId)
