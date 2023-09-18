@@ -241,7 +241,8 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
            endDate
 
         })
-        return res.json(eventBuild.save())
+        const eventSave = await eventBuild.save()
+        return res.json(eventSave)
 
     }else {
         const err = new Error("Forbidden")
