@@ -99,6 +99,8 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
     const eventId = req.params.eventId
     const userId = req.user.id
     const {url, preview} = req.body
+    const groupCheck = await Group.findByPk(eventCheck.groupId)
+    const groupId = eventCheck.id
 
     const eventCheck = await Event.findByPk(eventId)
     const membershipCheck = await Membership.findAll({where:
@@ -112,7 +114,7 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
     }
 
     const getAttendee = await Attendee.findOne({where:{userId}})
-    const groupCheck = await Group.findByPk(eventCheck.groupId)
+
 
     if (eventCheck){
     if (getAttendee||membershipCheck==="co-host"||groupCheck.organizerId===userId){
