@@ -99,19 +99,23 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
     const eventId = req.params.eventId
     const userId = req.user.id
     const {url, preview} = req.body
-    const groupCheck = await Group.findByPk(eventCheck.groupId)
-    const groupId = groupCheck.id
+
+
 
     const eventCheck = await Event.findByPk(eventId)
-    const membershipCheck = await Membership.findAll({where:
-        {userId,
-        groupId}
-    })
+
     if(!eventCheck){
         const err = new Error("Event couldn't be found")
         err.status = 404
         next(err)
     }
+    const groupCheck = await Group.findByPk(eventCheck.groupId)
+    const groupId = groupCheck.id
+
+    const membershipCheck = await Membership.findAll({where:
+        {userId,
+        groupId}
+    })
 
     const getAttendee = await Attendee.findOne({where:{userId:userId,eventId:eventId}})
 
