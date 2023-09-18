@@ -320,7 +320,7 @@ router.post('/:eventId/attendance', requireAuth, async(req,res,next)=>{
     }})
     if(attendeeCheck){
         if(attendeeCheck.status==="pending"){
-            const err= new Error("Attendance has already been requested")
+        const err= new Error("Attendance has already been requested")
         err.status = 400
         next(err)
         }
@@ -401,7 +401,9 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
         const memberList= await Membership.findAll({
             where:{groupId:groupId},
        })
-           let Members = []
+       let Members = []
+       if(memberList){
+
            for(let user of memberList){
             if (user.status!=="pending"){
                const userDetails = await User.findByPk(user.userId)
@@ -415,7 +417,7 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
                }
                Members.push(use)
            }}
-
+        }
            return res.json({"Attendees":Members})
 
      }
@@ -494,6 +496,7 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
         const eventCheck = await Event.findByPk(eventId)
 
 
+
         const userCheck = await User.findByPk(memberId)
         if (!userCheck){
             const err = new Error("Attendance does not exist for this User")
@@ -509,6 +512,7 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
         }
         const groupId = eventCheck.groupId
         const groupCheck = await Group.findByPk(groupId)
+        const memberCheck = Membership.findOne({where:{userId:memberId,groupId:groupId}})
 
         if(groupCheck.organizerId!==userId&&memberId==userId){
             const err = new Error("Only the User or organizer may delete an Attendance")
@@ -521,10 +525,26 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
               err.status = 404
               next(err)
          }
+         if(groupCheck.organizerId===userId){
          await Attendee.destroy({where:{userId:memberId,eventId:eventId}})
          return res.json({
             "message": "Successfully deleted attendance from event"
           })
+        }
+        if(memberId===userId){
+            await Attendee.destroy({where:{userId:memberId,eventId:eventId}})
+            return res.json({
+               "message": "Successfully deleted attendance from event"
+             })
+        }
+        if(memberCheck){
+            if(memberCheck.status==="co-host"){
+                await Attendee.destroy({where:{userId:memberId,eventId:eventId}})
+                return res.json({
+                   "message": "Successfully deleted attendance from event"
+                 })
+            }
+        }
     })
 
 module.exports = router;
