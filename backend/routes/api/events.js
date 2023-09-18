@@ -195,7 +195,7 @@ router.get('/:eventId', async(req, res, next)=>{
 
     return res.json(evenReturn)
 })
-
+//! Working Here
 router.put('/:eventId', requireAuth, async(req, res, next)=>{
     const userId = req.user.id
     const eventId = req.params.eventId
@@ -241,7 +241,7 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
            endDate
 
         })
-        return (eventBuild.save())
+        return res.json(eventBuild.save())
 
     }else {
         const err = new Error("Forbidden")
