@@ -568,12 +568,9 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
     const memberGet = await Membership.findOne({where:{userId:userId,groupId:groupId}})
 
 
-    if(groupCheck.organizerId!==userId&&memberGet.status!=="co-host"){
-        const err = new Error("Forbidden")
-        err.status = 403
-        next(err)
-    }
+
     //membership change options
+    if(memberGet){
     if(memberGet.status==="co-host"&&status==="co-host"){
         const err = new Error("Forbidden")
         err.status = 403
@@ -593,6 +590,17 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
         return res.json(memberReturn)
 
     }
+    if(memberGet.status==="member"||memberGet.status==="pending"){
+        const err = new Error("Forbidden")
+        err.status = 403
+        next(err)
+    }
+    if(memberGet.status!=="co-host"){
+        const err = new Error("Forbidden")
+        err.status = 403
+        next(err)
+    }
+    }
     if (groupCheck.organizerId===userId&&status==="co-host"){
         const memberMake = await membershipGet.set({
             groupId:groupId,
@@ -608,7 +616,7 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
         await memberMake.save()
         return res.json(memberReturn)
     }
-    
+
 })
 
 router.delete('/:groupId/memberShip', requireAuth, async (req, res, next)=>{
