@@ -40,7 +40,7 @@ router.post(
         return res.status(500).json({"message":"User already exists","errors":{"email": "User with that email already exists"}})
       }
       const usernameCheck = await User.findOne({where:{username:req.body.username}})
-      if (username){
+      if (usernameCheck){
         return res.status(500).json({
           "message": "User already exists",
           "errors": {
