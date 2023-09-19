@@ -290,7 +290,9 @@ router.delete('/:eventId', requireAuth, async (req, res, next)=>{
     const eventDel = await Event.findByPk(eventId)
     Event.destroy({where:{id:eventId}})
 
-    return res.json("Successfully deleted")
+    return res.json({
+        "message": "Successfully deleted"
+      })
     }
     else{
         const err = new Error("Forbidden")
