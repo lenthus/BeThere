@@ -174,10 +174,11 @@ router.post('/:groupId/images',requireAuth, async(req, res, next)=>{
     if (groupCheck){
 
     const imageCheck = await Image.findOne({where:{imageableId:groupId,imageType:"Group",preview:true}})
-    if(imageCheck){
-        const err = new Error("Group preview image already exists")
-    err.status = 400
-    next(err)
+    if(imageCheck&&preview===true){
+    // const err = new Error("Group preview image already exists")
+    // err.status = 400
+    // next(err)
+    return res.status(500).json("Group preview image already exists")
     }
 
     if (groupCheck.organizerId === userId){

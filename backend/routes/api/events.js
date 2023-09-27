@@ -160,11 +160,8 @@ router.get('/:eventId', async(req, res, next)=>{
     }
         let img = null
         const numMembers = await Attendee.count({where:{eventId:event.id}})
-        const imageGetter = await Image.findOne({where:{imageableId:event.id,preview:true,imageType:"Event"}})
-        if (imageGetter){
-        img = imageGetter.url
-        } else{
-        img = null}
+        // const imageGetter = await Image.findOne({where:{imageableId:event.id,preview:true,imageType:"Event"}})
+        const allImages = await Image.findAll({where:{imageableId:event.id,imageType:"Event"}})
         const evenReturn = {
             id:event.id,
             groupId:event.groupId,
@@ -175,7 +172,6 @@ router.get('/:eventId', async(req, res, next)=>{
             startDate:event.startDate,
             endDate:event.endDate,
             numAttending:numMembers,
-            previewImage:img,
             Group:{
                 id:event.Group.id,
             name:event.Group.name,
@@ -189,8 +185,8 @@ router.get('/:eventId', async(req, res, next)=>{
                 state:event.Venue.state,
                 lat:event.Venue.lat,
                 lng:event.Venue.lng
-            }
-
+            },
+            EventImages:allImages
         }
 
     return res.json(evenReturn)
