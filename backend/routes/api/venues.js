@@ -21,13 +21,13 @@ router.put('/:venueId', requireAuth, async(req, res, next)=>{
     const groupFind = await Group.findByPk(venFind.groupId)
     if (groupFind){
     if (groupFind.organizerId === userId||memberCheck(userId,venFind.groupId).status === "co-host"){
-    const venEdit = await venFind.set({
-        address,
-        city,
-        state,
-        lat,
-        lng
-    })
+        const venEdit = await venFind.update({
+            address,
+            city,
+            state,
+            lat,
+            lng
+        }, { defaultScope: true })
     const venReturn = {
         id:venEdit.id,
         groupId:venEdit.groupId,
@@ -38,7 +38,7 @@ router.put('/:venueId', requireAuth, async(req, res, next)=>{
         lng:venEdit.lng
     }
    const venueReturn = await venEdit.save()
-   return res.json(venueReturn)
+   return res.json(venEdit)
     } else
    {
     const err = new Error("Forbidden")

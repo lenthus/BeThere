@@ -80,7 +80,7 @@ router.get('/current', requireAuth, async(req,res,next)=>{
         numMembers:members,
         previewImage:img
     }
-    groupReturn.push(newGroup)
+    groupReturn.push({"Groups":newGroup})
     }
     const getMembership = await Membership.findAll({
         where:{userId:userId}
@@ -117,7 +117,7 @@ router.get('/current', requireAuth, async(req,res,next)=>{
         numMembers:members,
         previewImage:img
     }
-    groupReturn.push(newGroup)
+    groupReturn.push({"Groups":newGroup})
 
 
 }
@@ -215,7 +215,7 @@ router.put('/:groupId', requireAuth, async(req, res, next)=>{
 
     if (!groupFind){
         const err = new Error("Group couldn't be found")
-        err.status = 400
+        err.status = 404
         return next(err)
     }
     if (groupFind){
