@@ -451,25 +451,27 @@ router.post('/:groupId/events', requireAuth, async(req, res, next)=>{
 router.get('/:groupId/members', async(req, res, next)=>{
 
     const groupId = req.params.groupId
-
     const groupCheck = await Group.findByPk(groupId)
-    if (!req.user.id){
-        let Members = []
-        for(let user of memberList){
-         if (user.status!=="pending"){
-            const userDetails = await User.findByPk(user.userId)
-             let use={
-                id:userId,
-                firstName:userDetails.firstName,
-                lastName:userDetails.lastName,
-                Membership:{
-                    status:user.status
-                }
-            }
-            Members.push(use)
-        }}
+    if (!req.user){
+        const memberList= await Membership.findAll({
+            where:{groupId:groupId},
+       })
+           let Members = []
+           for(let user of memberList){
+            if (user.status!=="pending"){
+               const userDetails = await User.findByPk(user.userId)
+                let use={
+                   id:userDetails.userId,
+                   firstName:userDetails.firstName,
+                   lastName:userDetails.lastName,
+                   Membership:{
+                       status:user.status
+                   }
+               }
+               Members.push(use)
+           }}
 
-        return res.json({"Members":Members})
+           return res.json({"Members":Members})
 
     }
     const userId = req.user.id
