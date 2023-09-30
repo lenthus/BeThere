@@ -460,7 +460,7 @@ router.get('/:groupId/members', async(req, res, next)=>{
    return next(err)
     }
     const membershipCheck = await Membership.findOne({where:{userId:userId,groupId:groupId}})
-
+    if (membershipCheck){
     if (groupCheck.organizerId === userId||membershipCheck==="co-host"){
        const memberList= await Membership.findAll({
          where:{groupId:groupId},
@@ -480,7 +480,7 @@ router.get('/:groupId/members', async(req, res, next)=>{
         }
 
         return res.json({"Members":Members})
-    }else{
+    }}else{
         const memberList= await Membership.findAll({
             where:{groupId:groupId},
        })
@@ -552,6 +552,15 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
         userId:memberId,
         groupId:groupId
     }})
+    const userCheck = await User.findByPk(memberId)
+    if (!userCheck){
+        return res.status(500).json({
+                "message": "Validation Error",
+                "errors": {
+                  "memberId": "User couldn't be found"
+                }
+              })
+    }
 
     if(!membershipGet){
         const err = new Error("Membership between the user and the group does not exist")
@@ -566,9 +575,15 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
    return next(err)
     }
     if(status==="pending"){
-        const err = new Error("Cannot change a membership status to pending")
-        err.status = 403
-       return next(err)
+    //     const err = new Error("Cannot change a membership status to pending")
+    //     err.status = 403
+    //    return next(err)
+    return res.status(500).json({
+            "message": "Validations Error",
+            "errors": {
+              "status" : "Cannot change a membership status to pending"
+            }
+          })
     }
     const memberGet = await Membership.findOne({where:{userId:userId,groupId:groupId}})
 

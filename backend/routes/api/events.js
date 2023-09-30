@@ -169,6 +169,8 @@ router.get('/:eventId', async(req, res, next)=>{
             name:event.name,
             description:event.description,
             type:event.type,
+            capacity:event.capacity,
+            price:event.price,
             startDate:event.startDate,
             endDate:event.endDate,
             numAttending:numMembers,
@@ -233,7 +235,7 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
 
         })
         const eventSave = await eventBuild.save()
-        return res.json(eventSave)
+        return res.json(eventBuild)
     }
     if (membershipCheck){
         if (membershipCheck.status==="co-host"){
@@ -250,7 +252,7 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
 
             })
             const eventSave = await eventBuild.save()
-            return res.json(eventSave)
+            return res.json(eventBuild)
 
 
     }else{
@@ -428,18 +430,19 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
             userId:memberId,
             eventId:eventId
         }})
-
-        if(!attendanceGet){
-            const err = new Error("Attendance between the user and the event does not exist")
-            err.status = 404
-           return next(err)
-        }
         eventCheck = await Event.findByPk(eventId)
         if(!eventCheck){
             const err= new Error("Event couldn't be found")
         err.status = 404
        return next(err)
         }
+
+        if(!attendanceGet){
+            const err = new Error("Attendance between the user and the event does not exist")
+            err.status = 404
+           return next(err)
+        }
+
         if(status==="pending"){
             const err = new Error("Cannot change an attendance status to pending")
             err.status = 400
