@@ -15,7 +15,7 @@ router.put('/:venueId', requireAuth, async(req, res, next)=>{
     if(!venFind){
         const err = new Error("Venue couldn't be found")
         err.status = 404
-        next(err)
+       return next(err)
     }
 
     const groupFind = await Group.findByPk(venFind.groupId)
@@ -43,12 +43,12 @@ router.put('/:venueId', requireAuth, async(req, res, next)=>{
    {
     const err = new Error("Forbidden")
     err.status = 403
-    next(err)
+  return next(err)
    }
 }else{
     const err = new Error("Group couldn't be found")
     err.status = 404
-    next(err)
+   return next(err)
 }})
 
 

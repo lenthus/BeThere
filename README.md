@@ -6,7 +6,7 @@ Be There
 
 ![database-schema]
 
-[database-schema]: `<insert link or local path to database schema>`
+[database-schema]: ./images/databaseSchema.png
 
 ## API Documentation
 

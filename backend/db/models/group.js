@@ -57,6 +57,10 @@ module.exports = (sequelize, DataTypes) => {
         len:{
         args:[1,60],
         msg:"Name must be 60 characters or less"
+      },
+      notNull:{
+        args:true,
+        msg:"Name must be 60 characters or less"
       }
     }},
     about:{
@@ -65,6 +69,10 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         len:{
         args:[50,99999],
+        msg:"About must be 50 characters or more"
+      },
+      notNull:{
+        args:true,
         msg:"About must be 50 characters or more"
       }
     }},
