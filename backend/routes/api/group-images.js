@@ -14,12 +14,12 @@ router.delete('/:imageId', requireAuth, async (req, res, next)=>{
     if(!imageCheck){
         const err = new Error("Group Image couldn't be found")
         err.status = 404
-        next(err)
+       return next(err)
     }
     if(imageCheck.imageType !== "Group"){
         const err = new Error("Group Image couldn't be found")
         err.status = 404
-        next(err)
+       return next(err)
     }
     const groupCheck = await Group.findByPk(imageCheck.imageableId)
     const membershipCheck = Membership.findOne({where:{userId:userId,groupId:imageCheck.imageableId}})
@@ -27,7 +27,7 @@ router.delete('/:imageId', requireAuth, async (req, res, next)=>{
     if(groupCheck.organizerId!==userId && membershipCheck.status!=="co-host"){
         const err = new Error("Forbidden")
         err.status = 403
-        next(err)
+       return next(err)
     }else{
         await imageCheck.destroy()
         return res.json({"message": "Successfully deleted"})

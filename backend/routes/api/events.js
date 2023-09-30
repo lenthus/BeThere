@@ -107,7 +107,7 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
     if(!eventCheck){
         const err = new Error("Event couldn't be found")
         err.status = 404
-        next(err)
+       return next(err)
     }
     const groupCheck = await Group.findByPk(eventCheck.groupId)
     const groupId = groupCheck.id
@@ -138,7 +138,7 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
     else{
         const err = new Error("Forbidden")
         err.status = 403
-        next(err)
+       return next(err)
     }
 }else{
     const err = new Error("Event couldn't be found")
@@ -156,7 +156,7 @@ router.get('/:eventId', async(req, res, next)=>{
     if (!event){
         const err= new Error("Event couldn't be found")
     err.status = 404
-    next(err)
+   return next(err)
     }
         let img = null
         const numMembers = await Attendee.count({where:{eventId:event.id}})
@@ -209,7 +209,7 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
     if (!getGroupId){
         const err = new Error("Venue couldn't be found")
         err.status = 404
-        next(err)
+       return next(err)
     }
     const groupCheck = await Group.findByPk(getGroupId.groupId)
 
@@ -256,11 +256,11 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
     }else{
         const err = new Error("Forbidden")
         err.status = 403
-        next(err)}}
+       return next(err)}}
 
          const err = new Error("Forbidden")
          err.status = 403
-        next(err)
+       return next(err)
 
     })
 
@@ -272,7 +272,7 @@ router.delete('/:eventId', requireAuth, async (req, res, next)=>{
     if (!eventCheck){
         const err= new Error("Event couldn't be found")
         err.status = 404
-        next(err)
+       return next(err)
     }
 
     const groupId = eventCheck.groupId
@@ -293,7 +293,7 @@ router.delete('/:eventId', requireAuth, async (req, res, next)=>{
     else{
         const err = new Error("Forbidden")
         err.status = 403
-        next(err)
+       return next(err)
 }
 })
 
@@ -307,7 +307,7 @@ router.post('/:eventId/attendance', requireAuth, async(req,res,next)=>{
     if (!eventCheck){
         const err= new Error("Event couldn't be found")
         err.status = 404
-        next(err)
+       return next(err)
         }
     const groupId = eventCheck.groupId
 
@@ -320,12 +320,12 @@ router.post('/:eventId/attendance', requireAuth, async(req,res,next)=>{
         if(attendeeCheck.status==="pending"){
         const err= new Error("Attendance has already been requested")
         err.status = 400
-        next(err)
+       return next(err)
         }
         if(attendeeCheck.status==="attending"){
             const err= new Error("User is already an attendee of the event")
         err.status = 400
-        next(err)
+       return next(err)
         }
     }
     const membershipCheck = await Membership.findOne({where:{userId,groupId}})
@@ -357,7 +357,7 @@ router.post('/:eventId/attendance', requireAuth, async(req,res,next)=>{
     }else{
         const err = new Error("Forbidden")
         err.status = 403
-        next(err)
+       return next(err)
     }
 })
 
@@ -369,7 +369,7 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
     if(!eventCheck){
         const err = new Error("Event couldn't be found")
         err.status = 404
-        next(err)
+       return next(err)
     }
     const groupId = eventCheck.groupId
 
@@ -432,18 +432,18 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
         if(!attendanceGet){
             const err = new Error("Attendance between the user and the event does not exist")
             err.status = 404
-            next(err)
+           return next(err)
         }
         eventCheck = await Event.findByPk(eventId)
         if(!eventCheck){
             const err= new Error("Event couldn't be found")
         err.status = 404
-        next(err)
+       return next(err)
         }
         if(status==="pending"){
             const err = new Error("Cannot change an attendance status to pending")
             err.status = 400
-            next(err)
+          return next(err)
         }
         const groupCheck = await Group.findByPk(eventCheck.groupId)
         const memberGet = await Membership.findOne({where:{userId}})
@@ -481,7 +481,7 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
         if(groupCheck.organizerId!==userId||memberGet.status!=="co-host"){
             const err = new Error("Forbidden")
         err.status = 403
-        next(err)
+       return next(err)
         }
     }})
     router.delete('/:eventId/attendance', requireAuth, async (req, res, next)=>{
@@ -497,14 +497,14 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
         if (!userCheck){
             const err = new Error("Attendance does not exist for this User")
             err.status = 404
-            next(err)
+           return next(err)
         }
         const attendanceCheck = await Attendee.findOne({where:{userId:memberId,eventId:eventId}})
 
         if (!eventCheck){
             const err = new Error("Event couldn't be found")
               err.status = 404
-              next(err)
+             return next(err)
         }
         const groupId = eventCheck.groupId
         const groupCheck = await Group.findByPk(groupId)
@@ -513,13 +513,13 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
         if(groupCheck.organizerId!==userId&&memberId==userId){
             const err = new Error("Only the User or organizer may delete an Attendance")
               err.status = 403
-              next(err)
+             return next(err)
         }
 
         if(!attendanceCheck){
             const err = new Error("Attendance does not exist for this User")
               err.status = 404
-              next(err)
+             return next(err)
          }
          if(groupCheck.organizerId===userId){
          await Attendee.destroy({where:{userId:memberId,eventId:eventId}})
