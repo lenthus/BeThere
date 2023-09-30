@@ -449,11 +449,11 @@ router.post('/:groupId/events', requireAuth, async(req, res, next)=>{
 
 
 router.get('/:groupId/members', async(req, res, next)=>{
-    const userId = req.user.id
+
     const groupId = req.params.groupId
 
     const groupCheck = await Group.findByPk(groupId)
-    if (!userId){
+    if (!req.user.id){
         let Members = []
         for(let user of memberList){
          if (user.status!=="pending"){
@@ -472,7 +472,7 @@ router.get('/:groupId/members', async(req, res, next)=>{
         return res.json({"Members":Members})
 
     }
-
+    const userId = req.user.id
     if(!groupCheck){
         const err= new Error("Group couldn't be found")
     err.status = 404
