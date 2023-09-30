@@ -32,11 +32,11 @@ module.exports = (sequelize, DataTypes) => {
     allowNull:false,
     validate:{
       notEmpty:{
-        args:true,
+        args:[true],
         msg:"Street address is required"
       },
       notNull:{
-        args:true,
+        args:[true],
         msg:"Street address is required"
       }
     }
@@ -46,11 +46,11 @@ module.exports = (sequelize, DataTypes) => {
     allowNull:false,
     validate:{
       notEmpty:{
-        args:true,
+        args:[true],
         msg:"City is required"
       },
       notNull:{
-        args:true,
+        args:[true],
         msg:"City is required"
       }
     }
@@ -61,11 +61,11 @@ module.exports = (sequelize, DataTypes) => {
     allowNull:false,
     validate:{
       notEmpty:{
-        args:true,
+        args:[true],
         msg:"State is required"
       },
       notNull:{
-        args:true,
+        args:[true],
         msg:"State is required"
       }
     }
@@ -75,11 +75,11 @@ module.exports = (sequelize, DataTypes) => {
     allowNull:false,
     validate:{
       isDecimal:{
-        args:true,
+        args:[true],
         msg:"Latitude is not valid"
       },
       notEmpty:{
-        args:true,
+        args:[true],
         msg:"Latitude is not valid"
       }
     }
@@ -89,11 +89,11 @@ module.exports = (sequelize, DataTypes) => {
     allowNull:false,
     validate:{
       isDecimal:{
-        args:true,
+        args:[true],
         msg:"Longitude is not valid"
       },
       notEmpty:{
-        args:true,
+        args:[true],
         msg:"Longitude is not valid"
       }
     }
