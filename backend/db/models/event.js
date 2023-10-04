@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
         models.User,{
           through:models.Attendee,
           foreignKey:'eventId',
+          onDelete: 'Cascade',
           otherKey:'userId'
         }
       )

@@ -112,7 +112,7 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
     const groupCheck = await Group.findByPk(eventCheck.groupId)
     const groupId = groupCheck.id
 
-    const membershipCheck = await Membership.findAll({where:
+    const membershipCheck = await Membership.findOne({where:
         {userId,
         groupId}
     })
@@ -121,7 +121,7 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
 
 
     if (eventCheck){
-    if (getAttendee||membershipCheck==="co-host"||groupCheck.organizerId===userId){
+    if (getAttendee||membershipCheck.status==="co-host"||groupCheck.organizerId===userId){
     const imgCreate = await eventCheck.createImage({
     url,
     preview,
@@ -278,7 +278,7 @@ router.delete('/:eventId', requireAuth, async (req, res, next)=>{
     }
 
     const groupId = eventCheck.groupId
-    const membershipCheck = await Membership.findAll({where:
+    const membershipCheck = await Membership.findOne({where:
         {userId,
         groupId}
     })
@@ -378,7 +378,7 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
     const groupCheck = await Group.findByPk(groupId)
     const membershipCheck = await Membership.findOne({where:{userId,groupId}})
 
-    if (groupCheck.organizerId === userId||membershipCheck==="co-host"){
+    if (groupCheck.organizerId === userId||membershipCheck.status==="co-host"){
        const memberList= await Attendee.findAll({
          where:{eventId:eventId},
     })

@@ -17,10 +17,12 @@ router.put('/:venueId', requireAuth, async(req, res, next)=>{
         err.status = 404
        return next(err)
     }
+    const membershipCheck = await Membership.findOne({where:{userId,groupId:venFind.groupId}})
+
 
     const groupFind = await Group.findByPk(venFind.groupId)
     if (groupFind){
-    if (groupFind.organizerId === userId||memberCheck(userId,venFind.groupId).status === "co-host"){
+    if (groupFind.organizerId === userId||membershipCheck.status === "co-host"){
         const venEdit = await venFind.update({
             address,
             city,

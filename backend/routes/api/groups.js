@@ -267,7 +267,7 @@ router.post('/:groupId/venues', requireAuth, async(req, res, next)=>{
     const groupId = req.params.groupId
     const {address, city, state, lat, lng} =req.body
         //potential problem point
-    const membershipCheck = await Membership.findAll({where:{
+    const membershipCheck = await Membership.findOne({where:{
         userId,   //might need to specify
         groupId,
     }})
@@ -306,7 +306,7 @@ router.get('/:groupId/venues', requireAuth, async(req, res, next)=>{
     const userId = req.user.id
     const groupId = req.params.groupId
 
-    const membershipCheck = await Membership.findAll({where:{
+    const membershipCheck = await Membership.findOne({where:{
         userId:userId,
         groupId:groupId
     }})
@@ -398,12 +398,12 @@ router.post('/:groupId/events', requireAuth, async(req, res, next)=>{
     const groupId = req.params.groupId
     const {venueId,name,type,capacity,price,description,startDate,endDate} =req.body
 
-    const membershipCheck = await Membership.findAll({where:
+    const membershipCheck = await Membership.findOne({where:
         {userId,
         groupId}
     })
     const venueCheck = await Venue.findByPk(venueId)
-
+    console.log(membershipCheck)
     if(!venueCheck){
         const err = new Error("Venue does not exist")
         err.status = 403
