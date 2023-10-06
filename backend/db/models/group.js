@@ -25,12 +25,14 @@ module.exports = (sequelize, DataTypes) => {
         )
         Group.hasMany(
           models.Venue,{
-            foreignKey:'groupId'
+            foreignKey:'groupId',
+            onDelete: 'Cascade',
           }
         )
         Group.hasMany(
           models.Event,{
-            foreignKey:'groupId'
+            foreignKey:'groupId',
+            onDelete: 'Cascade',
           }
         )
         Group.hasMany(
@@ -87,12 +89,22 @@ module.exports = (sequelize, DataTypes) => {
       },
     private:{
       type:DataTypes.BOOLEAN,
+      validate:{
+        isIn:{
+          args:[["true","True","false","False"]],
+          msg:"Private must be a boolean"
+        }
+      }
     },
     city:{
       type:DataTypes.STRING,
       allowNull:false,
       validate:{
         notNull:{
+          args:[true],
+          msg:"City is required"
+        },
+        notEmpty:{
           args:[true],
           msg:"City is required"
         }
@@ -103,6 +115,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull:false,
       validate:{
         notNull:{
+          args:[true],
+          msg:"State is required"
+        },
+        notEmpty:{
           args:[true],
           msg:"State is required"
         }

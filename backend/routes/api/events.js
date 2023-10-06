@@ -4,28 +4,40 @@ const {Event, Venue, Membership, Group, Image, Attendee, User} = require('../../
 const { requireAuth } = require('../../utils/auth');
 const router = express.Router();
 const { validationResult, check } = require('express-validator');
+const { handleValidationErrors } = require('../../utils/validation');
 
 validateEvent = [
-check('page').isInt({min:1,max:10}).withMessage("Page must be greater than or equal to 1"),
-check('size').isInt({min:1,max:20}).withMessage("Size must be greater than or equal to 1"),
-check('name').isAlpha().withMessage("Name must be a string"),
-check('type').isIn(["Online","In Person"]).withMessage("Type must be 'Online' or 'In Person'"),
-check('startDate').isDate().withMessage("Start date must be a valid datetime")
+check('page').optional({checkFalsy: true}).isInt({min:1,max:10}).withMessage("Page must be greater than or equal to 1"),
+check('size').optional({checkFalsy: true}).isInt({min:1,max:20}).withMessage("Size must be greater than or equal to 1"),
+check('name').optional({checkFalsy: true}).isString().withMessage("Name must be a string"),
+check('type').optional({checkFalsy: true}).isIn(["Online","In Person"]).withMessage("Type must be 'Online' or 'In Person'"),
+check('startDate').optional({checkFalsy: true}).isISO8601().toDate().withMessage("Start date must be a valid datetime"),
+handleValidationErrors
 ]
-
+// check('date-of-birth').isISO8601().toDate(),
 router.get('/',validateEvent, async(req,res)=>{
     let {page, size, name, type, startDate} = req.query
     const evReturn = []
     let counter = 0
+// console.log(JSON.parse(req.query))
+    // const error = validationResult(req)
+    // let errors = {}
+    // for (const msg of error.errors){
+    // if (msg.value){
+    //     errors[msg.path]=msg.msg
+    //     counter++
+    // }}
 
-    const error = validationResult(req)
-    let errors = {}
-    for (const msg of error.errors){
-    if (msg.value){
-        errors[msg.path]=msg.msg
-        counter++
-    }}
-
+    let pagination={}
+    if (name){
+        pagination.name=name
+    }
+    if(type){
+        pagination.type=type
+    }
+    if (startDate){
+        pagination.startDate=startDate
+    }
     if (page){
         page = Number(page)
         if(page>10){
@@ -42,21 +54,19 @@ router.get('/',validateEvent, async(req,res)=>{
     }else{
         size = 20
     }
-    console.log(page)
-    console.log(size)
     const limit = size
     const offset = ((page-1)*limit)
 
-    if(counter>0){
-        return res.status(400).json({"message":"Bad Request",errors})
-    }
+    // if(counter>0){
+    //     return res.status(400).json({"message":"Bad Request",errors})
+    // }
 
     const getAllEvents = await Event.findAll({
         include:[
             {model:Group},
             {model:Venue},
         ],
-        limit,offset
+        where:pagination,limit,offset
     })
 
     for (const event of getAllEvents){
@@ -120,8 +130,12 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
     const getAttendee = await Attendee.findOne({where:{userId:userId,eventId:eventId}})
 
 
-    if (eventCheck){
-    if (getAttendee||membershipCheck.status==="co-host"||groupCheck.organizerId===userId){
+    if (!eventCheck){
+    const err = new Error("Event couldn't be found")
+    err.status = 404
+    return next(err)
+    }
+    if (getAttendee&&getAttendee.status==="attending"){
     const imgCreate = await eventCheck.createImage({
     url,
     preview,
@@ -133,18 +147,41 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
         url:imgCreate.url,
         preview:imgCreate.preview
     }
-    return res.json(imgReturn)
-}
-    else{
+    return res.json(imgReturn)}
+    if (membershipCheck){
+    if (membershipCheck.status==="co-host"){
+        const imgCreate = await eventCheck.createImage({
+            url,
+            preview,
+            imageType: 'Event'
+            })
+
+            const imgReturn = {
+                id:imgCreate.id,
+                url:imgCreate.url,
+                preview:imgCreate.preview
+            }
+            return res.json(imgReturn)
+    }}
+    if (groupCheck.organizerId===userId){
+        const imgCreate = await eventCheck.createImage({
+            url,
+            preview,
+            imageType: 'Event'
+            })
+
+            const imgReturn = {
+                id:imgCreate.id,
+                url:imgCreate.url,
+                preview:imgCreate.preview
+            }
+            return res.json(imgReturn)
+    }
+
         const err = new Error("Forbidden")
         err.status = 403
        return next(err)
-    }
-}else{
-    const err = new Error("Event couldn't be found")
-    err.status = 404
-    next(err)
-}})
+   })
 router.get('/:eventId', async(req, res, next)=>{
     const eventId = req.params.eventId
     const event = await Event.findOne({where:{id:eventId},
@@ -204,7 +241,7 @@ router.put('/:eventId', requireAuth, async(req, res, next)=>{
     if (!eventChecker){
           const err = new Error("Event couldn't be found")
                 err.status = 404
-                next(err)
+               return next(err)
     }
     const getGroupId = await Venue.findByPk(venueId)
 
@@ -284,7 +321,7 @@ router.delete('/:eventId', requireAuth, async (req, res, next)=>{
     })
     const groupCheck = await Group.findByPk(groupId)
 
-    if (groupCheck.organizerId===userId||membershipCheck.status==='co-host'){
+    if (groupCheck.organizerId===userId||membershipCheck?.status==='co-host'){
     const eventDel = await Event.findByPk(eventId)
     Event.destroy({where:{id:eventId}})
 
@@ -378,7 +415,7 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
     const groupCheck = await Group.findByPk(groupId)
     const membershipCheck = await Membership.findOne({where:{userId,groupId}})
 
-    if (groupCheck.organizerId === userId||membershipCheck.status==="co-host"){
+    if (groupCheck.organizerId === userId||membershipCheck?.status==="co-host"){
        const memberList= await Attendee.findAll({
          where:{eventId:eventId},
     })
@@ -467,7 +504,7 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
             return res.json(memberReturn)
 
         }
-        if (memberGet.status==="co-host"&&status==="attending"){
+        if (memberGet?.status==="co-host"&&status==="attending"){
             const memberMake = await attendanceGet.set({
                 status:"attending"
             })
@@ -481,7 +518,7 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
             return res.json(memberReturn)
 
         }
-        if(groupCheck.organizerId!==userId||memberGet.status!=="co-host"){
+        if(groupCheck.organizerId!==userId||memberGet?.status!=="co-host"){
             const err = new Error("Forbidden")
         err.status = 403
        return next(err)
@@ -513,7 +550,7 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
         const groupCheck = await Group.findByPk(groupId)
         const memberCheck = Membership.findOne({where:{userId:memberId,groupId:groupId}})
 
-        if(groupCheck.organizerId!==userId&&memberId==userId){
+        if(groupCheck.organizerId!==userId&&memberId!==userId){
             const err = new Error("Only the User or organizer may delete an Attendance")
               err.status = 403
              return next(err)
@@ -544,6 +581,9 @@ router.get('/:eventId/attendees', async(req, res, next)=>{
                  })
             }
         }
+        const err = new Error("Forbidden")
+        err.status = 403
+       return next(err)
     })
 
 module.exports = router;

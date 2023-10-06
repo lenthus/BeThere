@@ -1226,7 +1226,7 @@ Edit and returns an event specified by its id
       "venueId": 1,
       "name": "Tennis Group First Meet and Greet",
       "type": "Online",
-      "capacity": 10,
+      "capacity": 10,"hashedPassword", "email",
       "price": 18.50,
       "description": "The first meet and greet for our group! Come say hello!",
       "startDate": "2021-11-19 20:00:00",

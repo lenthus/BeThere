@@ -16,7 +16,7 @@ module.exports = {
       },
       userId: {
         type: Sequelize.INTEGER,
-        onDelete: 'Cascade',
+        onDelete: 'CASCADE',
         AllowNull:false,
         references:{
           model:'Users'
@@ -24,7 +24,7 @@ module.exports = {
       },
       groupId: {
         type: Sequelize.INTEGER,
-        onDelete: 'Cascade',
+        onDelete: 'CASCADE',
         allowNull:false,
         references:{
           model:'Groups'
