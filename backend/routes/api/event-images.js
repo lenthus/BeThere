@@ -12,7 +12,6 @@ router.delete('/:imageId', requireAuth, async (req, res, next)=>{
 
     const imageCheck = await Image.findByPk(imageId)
 
-
     if(!imageCheck){
         const err = new Error("Event Image couldn't be found")
         err.status = 404
@@ -24,10 +23,15 @@ router.delete('/:imageId', requireAuth, async (req, res, next)=>{
        return next(err)
     }
     const eventCheck = await Event.findByPk(imageCheck.imageableId)
-    const membershipCheck = Membership.findOne({where:{userId:userId,groupId:imageCheck.imageableId}})
+    const membershipCheck = await Membership.findOne({where:{userId:userId,groupId:eventCheck.groupId}})
     const groupCheck = await Group.findByPk(eventCheck.groupId)
 
-    if(groupCheck.organizerId!==userId && membershipCheck.status!=="co-host"){
+    if(!membershipCheck&&groupCheck.organizerId!==userId){
+        const err = new Error("Forbidden")
+        err.status = 403
+       return next(err)
+    }
+    if(membershipCheck&&groupCheck.organizerId!==userId && membershipCheck.status!=="co-host"){
         const err = new Error("Forbidden")
         err.status = 403
        return next(err)

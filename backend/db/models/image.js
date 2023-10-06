@@ -33,6 +33,13 @@ module.exports = (sequelize, DataTypes) => {
     defaultScope: {
       attributes: {
         exclude: ["createdAt", "updatedAt"]
+      },
+      scopes:{
+        groupInfo:{
+          attributes: {
+            exclude: ["createdAt", "updatedAt","imageableId","imageType"]
+          },
+        }
       }
     }
   });

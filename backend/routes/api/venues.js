@@ -22,7 +22,7 @@ router.put('/:venueId', requireAuth, async(req, res, next)=>{
 
     const groupFind = await Group.findByPk(venFind.groupId)
     if (groupFind){
-    if (groupFind.organizerId === userId||membershipCheck.status === "co-host"){
+    if (groupFind.organizerId === userId||membershipCheck?.status === "co-host"){
         const venEdit = await venFind.update({
             address,
             city,
