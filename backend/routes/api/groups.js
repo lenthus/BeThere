@@ -430,7 +430,7 @@ const validateThisEvent = [
     }),
     handleValidationErrors
   ];
-router.post('/:groupId/events',validateThisEvent, requireAuth, async(req, res, next)=>{
+router.post('/:groupId/events',requireAuth, validateThisEvent, async(req, res, next)=>{
     const userId = req.user.id
     const groupId = req.params.groupId
     const {venueId,name,type,capacity,price,description,startDate,endDate} =req.body
