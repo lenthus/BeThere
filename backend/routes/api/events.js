@@ -110,8 +110,6 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
     const userId = req.user.id
     const {url, preview} = req.body
 
-
-
     const eventCheck = await Event.findByPk(eventId)
 
     if(!eventCheck){
@@ -128,13 +126,7 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
     })
 
     const getAttendee = await Attendee.findOne({where:{userId:userId,eventId:eventId}})
-
-
-    if (!eventCheck){
-    const err = new Error("Event couldn't be found")
-    err.status = 404
-    return next(err)
-    }
+    console.log(getAttendee)
     if (getAttendee&&getAttendee.status==="attending"){
     const imgCreate = await eventCheck.createImage({
     url,
@@ -148,8 +140,8 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
         preview:imgCreate.preview
     }
     return res.json(imgReturn)}
-    if (membershipCheck){
-    if (membershipCheck.status==="co-host"){
+
+    if (membershipCheck&&membershipCheck.status==="co-host"){
         const imgCreate = await eventCheck.createImage({
             url,
             preview,
@@ -162,7 +154,7 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
                 preview:imgCreate.preview
             }
             return res.json(imgReturn)
-    }}
+    }
     if (groupCheck.organizerId===userId){
         const imgCreate = await eventCheck.createImage({
             url,
@@ -182,6 +174,7 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
         err.status = 403
        return next(err)
    })
+   
 router.get('/:eventId', async(req, res, next)=>{
     const eventId = req.params.eventId
     const event = await Event.findOne({where:{id:eventId},

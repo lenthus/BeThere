@@ -1,7 +1,9 @@
 const express = require('express');
-const { Op } = require('sequelize');
+const { Op, ValidationError } = require('sequelize');
 const { Event, Group, Image, Membership,User,Venue,Attendee} = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
+const { handleValidationErrors } = require('../../utils/validation');
+const { validationResult, check } = require('express-validator');
 
 const router = express.Router();
 
@@ -80,7 +82,7 @@ router.get('/current', requireAuth, async(req,res,next)=>{
         numMembers:members,
         previewImage:img
     }
-    groupReturn.push({"Groups":newGroup})
+    groupReturn.push(newGroup)
     }
     const getMembership = await Membership.findAll({
         where:{userId:userId}
@@ -117,11 +119,11 @@ router.get('/current', requireAuth, async(req,res,next)=>{
         numMembers:members,
         previewImage:img
     }
-    groupReturn.push({"Groups":newGroup})
+    groupReturn.push(newGroup)
 
 
 }
-return res.json(groupReturn)
+return res.json({ Groups:groupReturn})
 })
 
 router.get('/:groupId', async(req,res,next)=>{
@@ -392,7 +394,43 @@ router.get('/:groupId/events', async(req, res, next)=>{
     }
     return res.json({"Events":evReturn})
 })
-router.post('/:groupId/events', requireAuth, async(req, res, next)=>{
+
+
+const validateThisEvent = [
+    check('venueId')
+      .isNumeric()
+      .custom(async (value) => {
+        // Check if the venue exists
+        const venue = await Venue.findByPk(value);
+        if (!venue) {
+          return Promise.reject('Venue does not exist');
+        }
+      }),
+    check('name')
+      .isLength({ min: 5 })
+      .withMessage('Name must be at least 5 characters'),
+    check('type')
+      .isIn(['Online', 'In person'])
+      .withMessage('Type must be Online or In person'),
+    check('capacity').isInt().withMessage('Capacity must be an integer'),
+    check('price').isFloat().withMessage('Price is invalid'),
+    check('description').notEmpty().withMessage('Description is required'),
+    check('startDate').custom((startDate, { req }) => {
+      const { endDate } = req.body;
+      const currentDate = new Date();
+
+      if (new Date(startDate) < currentDate) {
+        throw new Error('Start date must be in the future');
+      }
+      if (new Date(endDate) < new Date(startDate)) {
+        throw new Error('End date must be greater than the start date');
+      }
+
+      return true;
+    }),
+    handleValidationErrors
+  ];
+router.post('/:groupId/events',validateThisEvent, requireAuth, async(req, res, next)=>{
     const userId = req.user.id
     const groupId = req.params.groupId
     const {venueId,name,type,capacity,price,description,startDate,endDate} =req.body
@@ -401,13 +439,15 @@ router.post('/:groupId/events', requireAuth, async(req, res, next)=>{
         {userId,
         groupId}
     })
-    const venueCheck = await Venue.findByPk(venueId)
-    console.log(membershipCheck)
-    if(!venueCheck){
-        const err = new Error("Venue does not exist")
-        err.status = 403
-       return next(err)
-    }
+
+    // const venueCheck = await Venue.findByPk(venueId)
+    // console.log(membershipCheck)
+    // if(!venueCheck){
+    //     const err = new ValidationError("Venue does not exist")
+    //     err.message = "Venue does not exist"
+    //     err.status = 404
+    //    return next(err)
+    // }
 
     const groupCheck = await Group.findByPk(groupId)
     if (groupCheck){
@@ -450,13 +490,14 @@ router.post('/:groupId/events', requireAuth, async(req, res, next)=>{
 router.get('/:groupId/members', async(req, res, next)=>{
 
     const groupId = req.params.groupId
+
     const groupCheck = await Group.findByPk(groupId)
     if (!req.user){
         const memberList= await Membership.findAll({
             where:{groupId:groupId},
        })
            let Members = []
-           for(let user of memberList){
+           for await(let user of memberList){
             if (user.status!=="pending"){
                const userDetails = await User.findByPk(user.userId)
                 let use={
@@ -474,22 +515,24 @@ router.get('/:groupId/members', async(req, res, next)=>{
 
     }
     const userId = req.user.id
+    console.log(userId)
     if(!groupCheck){
         const err= new Error("Group couldn't be found")
     err.status = 404
    return next(err)
     }
+
     const membershipCheck = await Membership.findOne({where:{userId:userId,groupId:groupId}})
     if (membershipCheck){
-    if (groupCheck.organizerId === userId||membershipCheck==="co-host"){
+    if (membershipCheck==="co-host"){
        const memberList= await Membership.findAll({
          where:{groupId:groupId},
     })
         let Members = []
-        for(const user of memberList){
+        for await(const user of memberList){
             const userDetails = await User.findByPk(user.userId)
              let use={
-                id:userId,
+                id:userDetails.id,
                 firstName:userDetails.firstName,
                 lastName:userDetails.lastName,
                 Membership:{
@@ -505,11 +548,11 @@ router.get('/:groupId/members', async(req, res, next)=>{
             where:{groupId:groupId},
        })
            let Members = []
-           for(let user of memberList){
+           for await(let user of memberList){
             if (user.status!=="pending"){
                const userDetails = await User.findByPk(user.userId)
                 let use={
-                   id:userId,
+                   id:userDetails.id,
                    firstName:userDetails.firstName,
                    lastName:userDetails.lastName,
                    Membership:{
@@ -526,11 +569,10 @@ router.get('/:groupId/members', async(req, res, next)=>{
             where:{groupId:groupId},
        })
            let Members = []
-           for(let user of memberList){
-            if (user.status!=="pending"){
+           for await(let user of memberList){
                const userDetails = await User.findByPk(user.userId)
                 let use={
-                   id:userId,
+                   id:userDetails.id,
                    firstName:userDetails.firstName,
                    lastName:userDetails.lastName,
                    Membership:{
@@ -538,11 +580,11 @@ router.get('/:groupId/members', async(req, res, next)=>{
                    }
                }
                Members.push(use)
-           }}
+           }
 
            return res.json({"Members":Members})
 
-     }
+        }
     })
 
 router.post('/:groupId/membership', requireAuth, async (req, res, next)=>{
@@ -614,10 +656,8 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
         err.status = 404
        return next(err)
     }
+
     if(status==="pending"){
-    //     const err = new Error("Cannot change a membership status to pending")
-    //     err.status = 403
-    //    return next(err)
     return res.status(400).json({
             "message": "Validations Error",
             "errors": {
@@ -639,7 +679,7 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
             status:"member"
         })
         const memberReturn =  {
-            id:membershipGet.id,
+            id:membershipGet.userId,
             groupId:memberMake.groupId,
             memberId:memberId,
             status:memberMake.status
@@ -721,6 +761,12 @@ router.delete('/:groupId/membership', requireAuth, async (req, res, next)=>{
           err.status = 400
          return next(err)
      }
+     if (!userMemberCheck){
+        const err = new Error("Forbidden")
+            err.status = 403
+           return next(err)
+     }
+
     if(membershipCheck){
     if(userId===memberId){
         await Membership.destroy({where:{userId:memberId,groupId:groupId}})
@@ -747,13 +793,16 @@ router.delete('/:groupId/membership', requireAuth, async (req, res, next)=>{
        return next(err)
     }
 
-    if (userMemberCheck&&userMemberCheck.status==="member"&&userId!==memberId){
+    if (userMemberCheck&&userMemberCheck.status==="member"){
         const err = new Error("Forbidden")
             err.status = 403
            return next(err)
     }
-
-
+    if (userMemberCheck&&userMemberCheck.status==="pending"){
+        const err = new Error("Forbidden")
+            err.status = 403
+           return next(err)
+    }
 
      await Membership.destroy({where:{userId:memberId,groupId:groupId}})
      return res.json({
