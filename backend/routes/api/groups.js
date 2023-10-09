@@ -736,13 +736,11 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
     }
     if (groupCheck.organizerId===userId&&status==="co-host"){
         const memberMake = await membershipGet.set({
-            groupId:groupId,
-            memberId:memberId,
             status:"co-host"
         })
         await memberMake.save()
         const memberReturn =  {
-            id:membershipGet.id,
+            id:memberId,
             groupId,
             memberId,
             status:membershipGet.status
