@@ -521,7 +521,26 @@ router.get('/:groupId/members', async(req, res, next)=>{
     err.status = 404
    return next(err)
     }
+    if (userId === groupCheck.organizerId){
+        const memberList= await Membership.findAll({
+            where:{groupId:groupId},
+       })
+           let Members = []
+           for await(const user of memberList){
+               const userDetails = await User.findByPk(user.userId)
+                let use={
+                   id:userDetails.id,
+                   firstName:userDetails.firstName,
+                   lastName:userDetails.lastName,
+                   Membership:{
+                       status:user.status
+                   }
+               }
+               Members.push(use)
+           }
 
+           return res.json({"Members":Members})
+    }
     const membershipCheck = await Membership.findOne({where:{userId:userId,groupId:groupId}})
     if (membershipCheck){
     if (membershipCheck==="co-host"){
@@ -570,6 +589,7 @@ router.get('/:groupId/members', async(req, res, next)=>{
        })
            let Members = []
            for await(let user of memberList){
+            if (user.status!=="pending"){
                const userDetails = await User.findByPk(user.userId)
                 let use={
                    id:userDetails.id,
@@ -580,10 +600,9 @@ router.get('/:groupId/members', async(req, res, next)=>{
                    }
                }
                Members.push(use)
-           }
+           }}
 
            return res.json({"Members":Members})
-
         }
     })
 
@@ -678,13 +697,14 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
         const memberMake = await membershipGet.set({
             status:"member"
         })
-        const memberReturn =  {
-            id:membershipGet.userId,
-            groupId:memberMake.groupId,
-            memberId:memberId,
-            status:memberMake.status
-        }
         await memberMake.save()
+        const memberReturn =  {
+            id:membershipGet.id,
+            groupId,
+            memberId,
+            status:membershipGet.status
+        }
+
         return res.json(memberReturn)
 
     }
@@ -703,14 +723,15 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
         const memberMake = await membershipGet.set({
             status:"member"
         })
-    const memberReturn =  {
-        id:membershipGet.id,
-        groupId:memberMake.groupId,
-        memberId:memberId,
-        status:memberMake.status
-    }
+        const memReturn = await memberMake.save()
+        const memberReturn =  {
+            id:membershipGet.id,
+            groupId,
+            memberId,
+            status:membershipGet.status
+        }
 
-    const memReturn = await memberMake.save()
+
     return res.json(memReturn)
     }
     if (groupCheck.organizerId===userId&&status==="co-host"){
@@ -719,13 +740,13 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next)=>{
             memberId:memberId,
             status:"co-host"
         })
+        await memberMake.save()
         const memberReturn =  {
             id:membershipGet.id,
-            groupId:memberMake.groupId,
-            memberId:memberId,
-            status:memberMake.status
+            groupId,
+            memberId,
+            status:membershipGet.status
         }
-        await memberMake.save()
         return res.json(memberReturn)
     }
     const err = new Error("Forbidden")
