@@ -14,7 +14,7 @@ check('type').optional({checkFalsy: true}).isIn(["Online","In Person"]).withMess
 check('startDate').optional({checkFalsy: true}).isISO8601().toDate().withMessage("Start date must be a valid datetime"),
 handleValidationErrors
 ]
-// check('date-of-birth').isISO8601().toDate(),
+
 router.get('/',validateEvent, async(req,res)=>{
     let {page, size, name, type, startDate} = req.query
     const evReturn = []
@@ -174,7 +174,7 @@ router.post('/:eventId/images', requireAuth, async(req, res,next)=>{
         err.status = 403
        return next(err)
    })
-   
+
 router.get('/:eventId', async(req, res, next)=>{
     const eventId = req.params.eventId
     const event = await Event.findOne({where:{id:eventId},
