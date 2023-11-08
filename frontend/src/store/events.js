@@ -41,7 +41,7 @@ export const getEvents = (events) => async dispatch => {
   }
 }
 /** The reports reducer is complete and does not need to be modified */
-const reportsReducer = (state = {}, action) => {
+const eventsReducer = (state = {}, action) => {
   switch (action.type) {
     case LOAD_EVENTS:
       const eventsState = {};

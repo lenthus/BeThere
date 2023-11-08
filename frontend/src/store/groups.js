@@ -62,7 +62,7 @@ export const getGroups = (groups) => async dispatch => {
 // }
 
 /** The reports reducer is complete and does not need to be modified */
-const reportsReducer = (state = {}, action) => {
+const groupsReducer = (state = {}, action) => {
   switch (action.type) {
     case LOAD_GROUPS:
       const groupsState = {};
