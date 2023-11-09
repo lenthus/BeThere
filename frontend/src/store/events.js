@@ -34,7 +34,7 @@ export const getEvents = (events) => async dispatch => {
   const data =await res.json()
   res.data = data;
   if (res.ok){
-    const events = await res.json()
+    // const events = await res.json()
     dispatch(loadEvents(data.Groups))
   }else{
     throw res

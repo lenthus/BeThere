@@ -43,7 +43,7 @@ export const getGroups = (groups) => async dispatch => {
   const data =await res.json()
   res.data = data;
   if (res.ok){
-    const groups = await res.json()
+    // const groups = await res.json()
     dispatch(loadGroups(data.Groups))
   }else{
     throw res
