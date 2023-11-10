@@ -9,17 +9,16 @@ const GroupList = () =>{
     console.log(groups)
     const dispatch=useDispatch()
 
-
-
-
     useEffect(()=>{
         dispatch(getGroups())
     },[])
 
     return (
         <>
-        <Link to={`/events`}>Events</Link>
-        <Link to={`/groups`}>Groups</Link>
+        <div className="MainLinks">
+        <Link to={`/events`}><h2>Events</h2></Link>
+        <Link to={`/groups`}><h2>Groups</h2></Link>
+        </div>
         <section>
             {Object.values(groups).map((group) => (
               <Link to={`/groups/${group.id}`}>{<GroupLink

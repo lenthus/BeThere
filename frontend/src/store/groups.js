@@ -14,6 +14,7 @@ export const LOAD_GROUPS = 'groups/LOAD_GROUPS'
 export const CREATE_GROUP = 'groups/CREATE_GROUP'
 export const UPDATE_GROUP = 'groups/UPDATE_GROUP'
 export const DELETE_GROUP = 'groups/DELETE_GROUP'
+export const DETAIL_GROUP = 'groups/DETAIL_GROUP'
 
 /**  Action Creators: */
 export const loadGroups = (groups) => ({
@@ -36,6 +37,11 @@ export const deleteGroup = (groupId) => ({
   groupId,
 });
 
+export const detailGroup = (group) => ({
+  type:   DETAIL_GROUP,
+  group,
+});
+
 /** Thunk Action Creators: */
 
 export const getGroups = (groups) => async dispatch => {
@@ -45,6 +51,17 @@ export const getGroups = (groups) => async dispatch => {
   if (res.ok){
     // const groups = await res.json()
     dispatch(loadGroups(data.Groups))
+  }else{
+    throw res
+  }
+}
+export const getGroupDetails = (groupId) => async dispatch => {
+  const res = await fetch(`/api/groups/${groupId}`)
+  const data =await res.json()
+  res.data = data;
+  if (res.ok){
+    // const groups = await res.json()
+    dispatch(detailGroup(data))
   }else{
     throw res
   }
@@ -78,6 +95,9 @@ const groupsReducer = (state = {}, action) => {
       const newState = { ...state };
       delete newState[action.groupId];
       return newState;
+    case DETAIL_GROUP:
+      const detailsOfGroup = action.group
+      return detailsOfGroup
     default:
       return state;
   }

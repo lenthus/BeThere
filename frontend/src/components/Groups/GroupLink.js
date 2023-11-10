@@ -10,11 +10,11 @@ const GroupLink = ({group})=>{
     <div className = 'groupBox'>
     <img src={group.previewImage} />
       <div className="li-contents-flex">
-        <div>{group.name}</div>
-        <div>{group.city}, {group.state}</div>
-        <div>{group.about}</div>
-        <div>{group.numEvents} Events</div>
-        <div>{group.private?"Private":"Public"}</div>
+        <div><h2>{group.name}</h2></div>
+        <div><h3>{group.city}, {group.state}</h3></div>
+        <div><p>{group.about}</p></div>
+        <div><h3>{group.numEvents} Events</h3></div>
+        <div><h3>{group.private?"Private":"Public"}</h3></div>
         <div className="buttons-container">
           {/* <Link className="edit-link" to={`/groups/${group.id}/edit`}> Edit </Link> */}
         </div>

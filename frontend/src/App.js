@@ -5,6 +5,8 @@ import * as sessionActions from "./store/session";
 import Navigation from "./components/Navigation";
 import GroupList from "./components/Groups/GroupList";
 import GroupIndex from "./components/Groups";
+import Splash from "./components/Splash";
+import GroupDetails from "./components/Groups/GroupDetails";
 
 function App() {
   const dispatch = useDispatch();
@@ -16,10 +18,16 @@ function App() {
   return (
     <>
       <Navigation isLoaded={isLoaded} />
-      {isLoaded && <Switch>
-        <Route path="/groups">
+      {isLoaded &&<Switch>
+        <Route exact path='/'>
+          <Splash />
+        </Route>
+        <Route exact path="/groups">
           <GroupIndex />
         </Route>
+        <Route path ="/groups/:groupId">
+         <GroupDetails />
+         </Route>
         </Switch>}
     </>
   );
