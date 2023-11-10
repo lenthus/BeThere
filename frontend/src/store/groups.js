@@ -79,25 +79,32 @@ export const getGroupDetails = (groupId) => async dispatch => {
 // }
 
 /** The reports reducer is complete and does not need to be modified */
-const groupsReducer = (state = {}, action) => {
+const groupsReducer = (state = {groups:{},currGroup:{}}, action) => {
   switch (action.type) {
     case LOAD_GROUPS:
       const groupsState = {};
       action.groups.forEach((group) => {
         groupsState[group.id] = group;
       });
-      return groupsState;
-    case CREATE_GROUP:
-      return { ...state, [action.group.id]: action.group };
-    case UPDATE_GROUP:
-      return { ...state, [action.group.id]: action.group };
+      return {...state, groups:groupsState};
+
+    case CREATE_GROUP:{
+      const groups={...state.groups}
+      groups[action.group.id]=action.group
+      return { ...state, groups };
+    }
+
+    case UPDATE_GROUP:{
+      const groups={...state.groups}
+      groups[action.group.id]=action.group
+      return { ...state, groups };
+    }
     case DELETE_GROUP:
       const newState = { ...state };
       delete newState[action.groupId];
       return newState;
     case DETAIL_GROUP:
-      const detailsOfGroup = action.group
-      return detailsOfGroup
+      return {...state, currGroup:action.group}
     default:
       return state;
   }

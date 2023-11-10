@@ -5,7 +5,7 @@ import { getGroups } from "../../store/groups";
 import GroupLink from "./GroupLink";
 
 const GroupList = () =>{
-    const {groups} = useSelector(state =>state)
+    const groups = useSelector(state =>state.groups.groups)
     console.log(groups)
     const dispatch=useDispatch()
 
