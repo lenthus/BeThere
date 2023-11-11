@@ -15,6 +15,7 @@ export const CREATE_GROUP = 'groups/CREATE_GROUP'
 export const UPDATE_GROUP = 'groups/UPDATE_GROUP'
 export const DELETE_GROUP = 'groups/DELETE_GROUP'
 export const DETAIL_GROUP = 'groups/DETAIL_GROUP'
+export const GET_NUM_EVENTS = 'groups/GET_NUM_EVENTS'
 
 /**  Action Creators: */
 export const loadGroups = (groups) => ({
@@ -42,6 +43,11 @@ export const detailGroup = (group) => ({
   group,
 });
 
+export const getNumEvents = (groupId) => ({
+  type: GET_NUM_EVENTS,
+  groupId
+})
+
 /** Thunk Action Creators: */
 
 export const getGroups = (groups) => async dispatch => {
@@ -66,20 +72,22 @@ export const getGroupDetails = (groupId) => async dispatch => {
     throw res
   }
 }
-// export const deleteReport = (reportId) => async dispatch => {
-//   const res = await fetch(`/api/reports/${reportId}`,{
-//     method:'DELETE',
-//   })
 
-//   if (res.ok){
-//     const reports = await res.json()
-//     dispatch(removeReport(reportId))
+export const getNumberEvents = (groupId) => async dispatch => {
+  const res = await fetch(`/api/groups/${groupId}/events`)
+  const data =await res.json()
+  res.data = data;
+  if (res.ok){
+    // const groups = await res.json()
+    dispatch(getNumEvents(data))
+  }else{
+    throw res
+  }
+}
 
-//   }
-// }
 
 /** The reports reducer is complete and does not need to be modified */
-const groupsReducer = (state = {groups:{},currGroup:{}}, action) => {
+const groupsReducer = (state = {groups:{},currGroup:{},Events:{}}, action) => {
   switch (action.type) {
     case LOAD_GROUPS:
       const groupsState = {};
@@ -105,6 +113,12 @@ const groupsReducer = (state = {groups:{},currGroup:{}}, action) => {
       return newState;
     case DETAIL_GROUP:
       return {...state, currGroup:action.group}
+    case GET_NUM_EVENTS:{
+      let event = {...state.Events}
+      event=action.groupId.Events
+      console.log("from case get num events",event)
+      return {...state,Events:event}
+    }
     default:
       return state;
   }
