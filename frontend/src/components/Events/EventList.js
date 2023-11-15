@@ -2,15 +2,17 @@ import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useDispatch,useSelector } from "react-redux";
 import { getGroups } from "../../store/groups";
-import GroupLink from "./GroupLink";
+// import GroupLink from "./GroupLink";
+import EventLink from "./EventLink";
+import { getEvents } from "../../store/events";
 
-const GroupList = () =>{
-    const groups = useSelector(state =>state.groups.groups)
-   
+const EventList = () =>{
+    const events = useSelector(state =>state.events.events)
+    console.log("from event list",events)
     const dispatch=useDispatch()
 
     useEffect(()=>{
-        dispatch(getGroups())
+        dispatch(getEvents())
     },[])
 
     return (
@@ -20,10 +22,10 @@ const GroupList = () =>{
         <Link to={`/groups`}><h2>Groups</h2></Link>
         </div>
         <section>
-            {Object.values(groups).map((group) => (
-              <Link to={`/groups/${group.id}`}>{<GroupLink
-                group={group}
-                key={group.id}
+            {Object.values(events).map((event) => (
+              <Link to={`/events/${event.id}`}>{<EventLink
+                event={event}
+                key={event.id}
               />}</Link>
 
             ))}
@@ -32,4 +34,4 @@ const GroupList = () =>{
       );
     };
 
-    export default GroupList;
+    export default EventList;

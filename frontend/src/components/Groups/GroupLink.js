@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 
 const GroupLink = ({group})=>{
     const dispatch= useDispatch()
-    console.log("from grouplink",group)
+
     return(
         <>
     <div className = 'groupBox'>
@@ -16,7 +16,7 @@ const GroupLink = ({group})=>{
         <div><h3>{group.numEvents} Events</h3></div>
         <div><h3>{group.private?"Private":"Public"}</h3></div>
         <div className="buttons-container">
-          {/* <Link className="edit-link" to={`/groups/${group.id}/edit`}> Edit </Link> */}
+        {/* <Link className="edit-link" to={`/groups/${group.id}/edit`}> Edit </Link> */}
         </div>
       </div>
       </div>

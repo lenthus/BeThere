@@ -1,0 +1,9 @@
+.logo {
+    width: 150px;
+    height: 100px;
+    margin: 10px 0;
+  }
+
+  .loginMenu {
+    display: flex; justify-content: space-around
+  }
