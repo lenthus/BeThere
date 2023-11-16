@@ -31,8 +31,8 @@ const EventDetail = () =>{
             <EventGroup groupId={event.Group.id}/>
             <img src={event.EventImages.filter(imgFinder)[0]?.url}></img>
             <div className= "eventDate">
-            <div><h3>Start{event.startDate.split("T")[0]} {"\u00b7"} {event.startDate.split("T")[1].split(".")[0]}</h3></div>
-            <div><h3>End{event.endDate.split("T")[0]} {"\u00b7"} {event.endDate.split("T")[1].split(".")[0]}</h3></div>
+            <div><h3>Start {event.startDate.split("T")[0]} {"\u00b7"} {event.startDate.split("T")[1].split(".")[0]}</h3></div>
+            <div><h3>End {event.endDate.split("T")[0]} {"\u00b7"} {event.endDate.split("T")[1].split(".")[0]}</h3></div>
             <div><h3>{event.price}</h3></div>
             <div><h3>{event.type}</h3></div>
             </div>

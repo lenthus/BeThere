@@ -1,4 +1,5 @@
 import { Dispatch } from "react";
+import { csrfFetch } from "./csrf";
 
 // taken from forms practice and modified
 export const LOAD_GROUPS = "groups/LOAD_GROUPS";
@@ -7,6 +8,7 @@ export const UPDATE_GROUP = "groups/UPDATE_GROUP";
 export const DELETE_GROUP = "groups/DELETE_GROUP";
 export const DETAIL_GROUP = "groups/DETAIL_GROUP";
 export const GET_NUM_EVENTS = "groups/GET_NUM_EVENTS";
+export const CREATE_GROUP_IMG = "groups/CREATE_GROUP_IMG"
 
 /**  Action Creators: */
 export const loadGroups = (groups) => ({
@@ -18,6 +20,11 @@ export const createGroup = (group) => ({
   type: CREATE_GROUP,
   group,
 });
+
+export const createGroupImage = (img,groupId) =>({
+  type: CREATE_GROUP_IMG,
+  groupId,img
+})
 
 export const updateGroup = (group) => ({
   type: UPDATE_GROUP,
@@ -40,7 +47,34 @@ export const getNumEvents = (groupId) => ({
 });
 
 /** Thunk Action Creators: */
-
+export const createGroupMaker = (group)=>async(dispatch)=>{
+const res= await csrfFetch('/api/groups',{
+  method: "POST",
+  body: JSON.stringify(group)
+})
+const data = await res.json()
+if (res.ok) {
+  // const groups = await res.json()
+  dispatch(createGroup(data));
+  return data
+} else {
+  throw res;
+}
+}
+export const createGroupImageMaker = (groupId,img)=>async(dispatch)=>{
+  const res= await csrfFetch(`/api/groups/${groupId}/images`,{
+    method: "POST",
+    body: JSON.stringify(img)
+  })
+  const data = await res.json()
+  if (res.ok) {
+    // const groups = await res.json()
+    dispatch(createGroupImage(data));
+    return data
+  } else {
+    throw res;
+  }
+  }
 export const getGroups = (groups) => async (dispatch) => {
   const res = await fetch("/api/groups");
   const data = await res.json();
@@ -113,7 +147,20 @@ const groupsReducer = (
       event = action.groupId.Events;
       return { ...state, Events: event };
     }
-    
+
+    case CREATE_GROUP:{
+      const newState={...state}
+      newState.currGroup[action.group.id] = action.group
+      return newState
+    }
+
+    case CREATE_GROUP_IMG:{
+      const newState = {...state}
+      newState.currGroup.GroupImages = []
+      newState.currGroup.GroupImages.push(action.img.url)
+      return newState
+    }
+
     default:
       return state;
   }

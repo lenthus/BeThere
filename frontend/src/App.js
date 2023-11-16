@@ -9,6 +9,7 @@ import Splash from "./components/Splash";
 import GroupDetails from "./components/Groups/GroupDetails";
 import EventList from "./components/Events/EventList";
 import EventDetail from "./components/Events/EventDetail";
+import CreateGroup from "./components/Groups/CreateGroup";
 
 function App() {
   const dispatch = useDispatch();
@@ -26,6 +27,9 @@ function App() {
         </Route>
         <Route exact path="/groups">
           <GroupIndex />
+        </Route>
+        <Route exact path="/groups/new">
+          <CreateGroup />
         </Route>
         <Route path ="/groups/:groupId">
          <GroupDetails />

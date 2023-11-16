@@ -7,6 +7,7 @@ export const UPDATE_EVENT = 'events/UPDATE_EVENT'
 export const DELETE_EVENT = 'events/DELETE_EVENT'
 export const GET_CURR_GROUP = 'events/GET_CURR_GROUP'
 export const EVENT_DETAILS = 'events/EVENT_DETAILS'
+export const REMOVE_GROUP_EVENTS = 'events/REMOVE_GROUP_EVENTS'
 
 /**  Action Creators: */
 export const loadEvents = (events) => ({
@@ -37,7 +38,10 @@ export const infoGroup = (groupId) => ({
   type: GET_CURR_GROUP,
   groupId
 })
-
+export const removeGroupEvents = (groupId) =>({
+  type: REMOVE_GROUP_EVENTS,
+  groupId
+})
 /** Thunk Action Creators: */
 
 export const getEvents = (events) => async dispatch => {
@@ -73,6 +77,7 @@ export const getGroup = (groupId) => async (dispatch) => {
     throw res
   }
 }
+
 /** The reports reducer is complete and does not need to be modified */
 const eventsReducer = (
   state = { events: {}, currEvent: {}, group: {} },
@@ -111,6 +116,15 @@ const eventsReducer = (
       let groupInfo = action.groupId;
       console.log("from reducer",groupInfo)
         return { ...state, group:groupInfo};
+    }
+    case REMOVE_GROUP_EVENTS:{
+      const events ={}
+      Object.values(state.events).forEach((event)=>{
+        if(event.groupId !== action.groupId){
+          event[event.id]=event;
+        }
+      })
+      return events
     }
 
     default:

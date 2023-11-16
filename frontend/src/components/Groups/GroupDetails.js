@@ -124,10 +124,10 @@ const GroupDetails = () => {
 
                 <div className="pastEvents">
                   {events
-                    .filter((event) => new Date(event.endDate) > new Date())
-                    .sort(compare)
-                    .reverse()
-                    .map((event) => (
+                  .filter((event) => new Date(event.endDate) > new Date())
+                  .sort(compare)
+                  .reverse()
+                  .map((event) => (
                       <div className="groupEvent" id={event.id} key={event.id}>
                         <div>
                           <img src={event.previewImage} alt="event preview" />
