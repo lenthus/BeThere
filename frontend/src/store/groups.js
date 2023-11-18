@@ -86,6 +86,21 @@ export const getGroups = (groups) => async (dispatch) => {
     throw res;
   }
 };
+
+export const groupDeleteFetch = (groupId) => async (dispatch) => {
+  const res = await csrfFetch(`/api/groups/${groupId}`,{
+    method: "DELETE",
+  });
+  const data = await res.json();
+  res.data = data;
+  if (res.ok) {
+    // const groups = await res.json()
+    dispatch(deleteGroup(data.Group));
+  } else {
+    throw res;
+  }
+};
+
 export const getGroupDetails = (groupId) => async (dispatch) => {
   const res = await fetch(`/api/groups/${groupId}`);
   const data = await res.json();
@@ -109,6 +124,20 @@ export const getNumberEvents = (groupId) => async (dispatch) => {
     throw res;
   }
 };
+export const updateGroupMaker = (group,groupId)=>async(dispatch)=>{
+  const res= await csrfFetch(`/api/groups/${groupId}`,{
+    method: "PUT",
+    body: JSON.stringify(group)
+  })
+  const data = await res.json()
+  if (res.ok) {
+    // const groups = await res.json()
+    dispatch(updateGroup(data));
+    return data
+  } else {
+    throw res;
+  }
+  }
 
 /** The reports reducer is complete and does not need to be modified */
 const groupsReducer = (
@@ -148,11 +177,11 @@ const groupsReducer = (
       return { ...state, Events: event };
     }
 
-    case CREATE_GROUP:{
-      const newState={...state}
-      newState.currGroup[action.group.id] = action.group
-      return newState
-    }
+    // case CREATE_GROUP:{
+    //   const newState={...state}
+    //   newState.currGroup[action.group.id] = action.group
+    //   return newState
+    // }
 
     case CREATE_GROUP_IMG:{
       const newState = {...state}

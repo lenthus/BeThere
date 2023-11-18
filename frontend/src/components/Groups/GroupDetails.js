@@ -4,13 +4,21 @@ import { getGroupDetails, getNumberEvents } from "../../store/groups";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {useHistory} from 'react-router-dom'
+import { groupDeleteFetch } from "../../store/groups";
+import OpenModalButton from "../OpenModalButton";
+
 
 const GroupDetails = () => {
+  const user = useSelector(state => state.session.user)
+  const history = useHistory()
   const { groupId } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const group = useSelector((state) => state.groups.currGroup);
   const dispatch = useDispatch();
   const events = useSelector((state) => state.groups.Events);
+
+  const isOrganizer = user?.id===group.organizerId?true:false
 
   useEffect(() => {
     dispatch(getGroupDetails(groupId))
@@ -30,18 +38,31 @@ const GroupDetails = () => {
     alert("Feature Coming Soon...");
   };
 
+  const handleCreateEvent = () =>{
+    history.push(`/groups/${groupId}/events/new`)
+  }
+
+  const handleUpdateGroup = () =>{
+    history.push(`/groups/${groupId}/edit`)
+  }
+
+  const handleDelete = () =>{
+    dispatch(groupDeleteFetch(groupId))
+    history.push("/groups")
+  }
+
+
   if (!isLoading) {
     return (
       <>
         <Link to={`/groups`}>
           <h5>Groups</h5>
         </Link>
-        <img src={group.GroupImages[0].url} />
+        <img src={group.GroupImages[0]?.url} />
         <div className="li-contents-flex">
           <div>
             <h2>{group.name}</h2>
           </div>
-          <h1>Hello from Group Details {groupId}</h1>
         </div>
         <div>
           <h4>{group.city}</h4>
@@ -52,9 +73,16 @@ const GroupDetails = () => {
           {" "}
           Organized By {group.Organizer.firstName} {group.Organizer.lastName}
         </div>
+        {(!isOrganizer)&&(
         <div>
           <button onClick={handleButton}>Join this group</button>
-        </div>
+        </div>)}
+        {(isOrganizer)&&(
+        <div>
+          <button onClick={handleCreateEvent}>Create event</button>
+          <button onClick={handleUpdateGroup}>Update</button>
+          <button onClick={handleDelete}>Delete</button>
+        </div>)}
         <div className="EventsPart">
           <div>
             <h3>Organizer</h3>

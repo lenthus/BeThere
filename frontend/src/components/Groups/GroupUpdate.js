@@ -1,21 +1,20 @@
-import { useState,useEffect } from "react"
-import {useHistory} from 'react-router-dom'
+import { useState, useEffect } from "react"
+import { useHistory } from 'react-router-dom'
 import { csrfFetch } from "../../store/csrf"
 import { useReducer } from "react"
-import { createGroupImageMaker } from "../../store/groups"
-import { createGroupMaker } from "../../store/groups"
+import { updateGroupMaker } from "../../store/groups"
 import { useDispatch } from "react-redux"
+import { useParams } from "react-router-dom"
 
 
-const CreateGroup = () =>{
+const GroupUpdate = ()=>{
     const dispatch=useDispatch()
-
+    const {groupId} = useParams()
     const [location, setLocation] = useState('')
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [type, setType] = useState('')
     const [status, setStatus] = useState('')
-    const [img, setImg] = useState('')
     const [errors, setErrors]=useState({})
     const history = useHistory()
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
@@ -30,8 +29,9 @@ const CreateGroup = () =>{
     handleClick()
        if (!Object.values(errors).length) {
         const cityState = location.split(',')
+        console.log("groupId",groupId)
         const payload = {
-
+                        id:groupId,
                         name,
                         about:description,
                         type,
@@ -39,19 +39,11 @@ const CreateGroup = () =>{
                         city: cityState[0].trim(),
                         state: cityState[1].trim(),
                         }
-
-        const imgUrl = {
-            url:img,
-            preview: true
-        }
-        console.log("img",imgUrl)
         console.log(payload)
-        let group = await dispatch(createGroupMaker(payload))
-        if (group.id){
-            console.log("img",group)
-            await dispatch(createGroupImageMaker(group.id,imgUrl))
+        
+        let group = await dispatch(updateGroupMaker(payload,groupId))
+
             history.push(`/groups/${group.id}`)
-        }
       }
     }
 
@@ -60,7 +52,7 @@ const CreateGroup = () =>{
     const handleDescription = (e) => setDescription(e.target.value)
     const handleType = (e) => setType(e.target.value)
     const handleStatus = (e) => setStatus(e.target.value)
-    const handleImg = (e) => setImg(e.target.value)
+
 
     const validate = ()=>{
         if(name.length<1) {errors.name = "Name is required"}
@@ -68,20 +60,10 @@ const CreateGroup = () =>{
         if(description.length<30)  errors.desc="Description must be at least 30 characters long"
         if(!type) errors.type=("Group Type is required")
         if(!status) errors.status=("Visibility Type is required")
-        if(!imgCheck(img)) errors.img=("Image Url must end in .png, .jpg, .jpg, or .jpeg")
+
         console.log(errors)
         setErrors(errors)}
 
-
-    const imgTypes = ["png","jpg","jpeg"]
-
-    const imgCheck = (img)=>{
-        let isTrue =null
-        for (const type of imgTypes){
-            if (img.includes(type)) isTrue=true
-        }
-        return isTrue
-    }
 
     return(
         <>
@@ -91,7 +73,7 @@ const CreateGroup = () =>{
         }>
         <div className="groupIntro">
         <h4>BECOME AN ORGANIZER</h4>
-        <h3>We'll walk you through a few steps to build your local community</h3>
+        <h3>We'll walk you through a few steps to your group's information</h3>
         <hr className='solid'/>
         <h3>First, set your group's location.</h3>
         <p>Meetup groups meet locally, in person and online. We'll connect you with people in your area, and more can join you online.</p>
@@ -196,28 +178,16 @@ const CreateGroup = () =>{
         {errors.status}
       </p>)}
         </div>
-        <div>
-            <p>Please add an image url for your group below:</p>
-        <input
-            type="text"
-            name="imgUrl"
-            onChange={handleImg}
-            placeholder="Image Url"
-        />
-          {(errors.img)&&(
-          <p className="errors">
-        {errors.img}
-      </p>)}
-        </div>
+
         <hr className="solid" />
         <button
         type="submit"
         onClick={handleSubmit}
         disabled={Object.values(errors).length>0}
-        >Create Group</button>
+        >Update Group</button>
         </form>
         </>
     )
 }
 
-export default CreateGroup
+export default GroupUpdate
