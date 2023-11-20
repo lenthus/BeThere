@@ -67,6 +67,7 @@ export const getEventDetails = (eventId) => async (dispatch) => {
   res.data = data;
   if (res.ok) {
     dispatch(detailEvent(data));
+    return data
   } else {
     throw res;
   }
@@ -98,6 +99,22 @@ export const createEventMaker = (groupId,event)=>async(dispatch)=>{
     throw res;
   }
   }
+
+  export const updateEventMaker = (eventId,event)=>async(dispatch)=>{
+    const res= await csrfFetch(`/api/events/${eventId}`,{
+      method: "PUT",
+      body: JSON.stringify(event)
+    })
+
+    const data = await res.json()
+    if (res.ok) {
+      dispatch(updateEvent(data));
+      return data
+    } else {
+      throw res;
+    }
+    }
+
   export const createEventImageMaker = (eventId,img)=>async(dispatch)=>{
     const res= await csrfFetch(`/api/events/${eventId}/images`,{
       method: "POST",
@@ -111,6 +128,33 @@ export const createEventMaker = (groupId,event)=>async(dispatch)=>{
       throw res;
     }
     }
+    export const eventDeleteFetch = (eventId) => async (dispatch) => {
+      const res = await csrfFetch(`/api/events/${eventId}`,{
+        method: "DELETE",
+      });
+      const data = await res.json();
+      res.data = data;
+      if (res.ok) {
+        // const groups = await res.json()
+        dispatch(deleteEvent(data.Group));
+      } else {
+        throw res;
+      }
+    };
+
+    export const eventImgDeleteFetch = (eventId) => async (dispatch) => {
+      const res = await csrfFetch(`/api/events/${eventId}`,{
+        method: "DELETE",
+      });
+      const data = await res.json();
+      res.data = data;
+      if (res.ok) {
+        // const groups = await res.json()
+        dispatch(deleteEvent(data.Group));
+      } else {
+        throw res;
+      }
+    };
 
 const eventsReducer = (
   state = { events: {}, currEvent: {}, group: {} },

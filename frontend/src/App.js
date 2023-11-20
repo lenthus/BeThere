@@ -12,6 +12,7 @@ import EventDetail from "./components/Events/EventDetail";
 import CreateGroup from "./components/Groups/CreateGroup";
 import EventCreate from "./components/Events/EventCreate";
 import GroupUpdate from "./components/Groups/GroupUpdate";
+import EventUpdate from "./components/Events/EventUpdate";
 
 function App() {
   const dispatch = useDispatch();
@@ -45,12 +46,15 @@ function App() {
          <Route exact path="/events">
           <EventList />
         </Route>
+        <Route path="/events/:eventId/edit">
+          <EventUpdate />
+        </Route>
         <Route exact path="/events/:eventId">
           <EventDetail />
         </Route>
         </Switch>}
     </>
-  );
+  )
 }
 
 export default App;

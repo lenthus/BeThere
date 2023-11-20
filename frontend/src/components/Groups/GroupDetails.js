@@ -5,20 +5,47 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {useHistory} from 'react-router-dom'
-import { groupDeleteFetch } from "../../store/groups";
+
 import OpenModalButton from "../OpenModalButton";
+// import OpenModalMenuItem from '../Navigation/OpenModalMenuItem';
+import GroupDeleteModal from "./GroupDelete";
+import { useRef } from "react";
 
 
 const GroupDetails = () => {
   const user = useSelector(state => state.session.user)
+  const ulRef = useRef();
+
   const history = useHistory()
   const { groupId } = useParams();
   const [isLoading, setIsLoading] = useState(true);
+  const [showMenu, setShowMenu] = useState(false);
+  const [deleteChoice, setDeleteChoice] = useState(false);
+  
   const group = useSelector((state) => state.groups.currGroup);
   const dispatch = useDispatch();
   const events = useSelector((state) => state.groups.Events);
 
   const isOrganizer = user?.id===group.organizerId?true:false
+
+  const openMenu = () => {
+    if (showMenu) return;
+    setShowMenu(true);
+  };
+  useEffect(() => {
+    if (!showMenu) return;
+
+    const closeMenu = (e) => {
+      if (!ulRef.current?.contains(e.target)) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener('click', closeMenu);
+
+    return () => document.removeEventListener("click", closeMenu);
+  }, [showMenu]);
+  const closeMenu = () => setShowMenu(false);
 
   useEffect(() => {
     dispatch(getGroupDetails(groupId))
@@ -44,11 +71,6 @@ const GroupDetails = () => {
 
   const handleUpdateGroup = () =>{
     history.push(`/groups/${groupId}/edit`)
-  }
-
-  const handleDelete = () =>{
-    dispatch(groupDeleteFetch(groupId))
-    history.push("/groups")
   }
 
 
@@ -81,7 +103,13 @@ const GroupDetails = () => {
         <div>
           <button onClick={handleCreateEvent}>Create event</button>
           <button onClick={handleUpdateGroup}>Update</button>
-          <button onClick={handleDelete}>Delete</button>
+           <OpenModalButton
+              buttonText="Delete"
+              modalComponent={<GroupDeleteModal
+              groupId={group.id}
+              />}
+
+            />
         </div>)}
         <div className="EventsPart">
           <div>
