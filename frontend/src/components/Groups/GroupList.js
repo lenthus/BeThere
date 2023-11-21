@@ -3,10 +3,11 @@ import { useEffect } from "react";
 import { useDispatch,useSelector } from "react-redux";
 import { getGroups } from "../../store/groups";
 import GroupLink from "./GroupLink";
+import "./GroupList.css"
 
 const GroupList = () =>{
     const groups = useSelector(state =>state.groups.groups)
-   
+
     const dispatch=useDispatch()
 
     useEffect(()=>{
@@ -17,7 +18,7 @@ const GroupList = () =>{
         <>
         <div className="MainLinks">
         <Link to={`/events`}><h2>Events</h2></Link>
-        <Link to={`/groups`}><h2>Groups</h2></Link>
+        <Link  to={`/groups`}><h2 className="current">Groups</h2></Link>
         </div>
         <section>
             {Object.values(groups).map((group) => (
