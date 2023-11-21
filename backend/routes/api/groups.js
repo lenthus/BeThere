@@ -375,6 +375,7 @@ router.get('/:groupId/events', async(req, res, next)=>{
             name:event.name,
             type:event.type,
             startDate:event.startDate,
+            description:event.description,
             endDate:event.endDate,
             numAttending:numMembers,
             previewImage:img,

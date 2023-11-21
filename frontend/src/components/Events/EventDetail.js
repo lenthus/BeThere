@@ -1,19 +1,15 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-// import { getGroupDetails, getNumberEvents } from "../../store/groups";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getEventDetails, getGroup } from "../../store/events";
-// import { getEvents } from "../../store/events";
 import EventGroup from "./EventGroup";
 import OpenModalButton from "../OpenModalButton";
 import EventDeleteModal from "./EventDelete";
 import { getGroupDetails } from "../../store/groups";
 import { useRef } from "react";
 import {useHistory} from 'react-router-dom'
-// import { updateEventMaker } from "../../store/events";
-// import { eventDeleteFetch } from "../../store/events";
 
 
 
@@ -26,12 +22,11 @@ const EventDetail = () =>{
     const user = useSelector(state => state.session.user)
     const dispatch = useDispatch();
     const event = useSelector((state) => state.events.currEvent);
-    // const group = useSelector((state) => state.events.group);
     const imgFinder =(image)=>image.preview===true
     const group = useSelector((state) => state.groups.currGroup);
     const ulRef = useRef();
     const history = useHistory()
-    // const groupId = group.id
+
 
     const isOrganizer = user?.id===group.organizerId?true:false
 

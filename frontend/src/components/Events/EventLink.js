@@ -10,16 +10,17 @@ const EventLink = ({event})=>{
     <div className = 'eventBox'>
     <img src={event.previewImage} />
       <div className="li-contents-flex">
-        <div><h2>{event.name}</h2></div>
-        <div><h3>{event.city}, {event.state}</h3></div>
-        <div><p>{event.about}</p></div>
-        <div><h3>{event.numEvents} Events</h3></div>
+        <div className="one"> {event.startDate.split("T")[0]} {"\u00b7"}{" "} {event.startDate.split("T")[1].split(".")[0]}</div>
+        <div className="two"><h2>{event.name}</h2></div>
+        <div className="three"><h3>{event.Venue.city}, {event.Venue.state}</h3></div>
+        <div><p>{event.description}</p></div>
         <div className="buttons-container">
           {/* <Link className="edit-link" to={`/groups/${group.id}/edit`}> Edit </Link> */}
+          <hr className='solid'/>
         </div>
       </div>
       </div>
-     
+
     </>
     )
 }

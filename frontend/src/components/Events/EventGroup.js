@@ -19,12 +19,12 @@ const group = useSelector((state) => state.events.group);
 
 console.log("from group detail" ,group)
 const imgFinder =(image)=>image.preview===true
-
+// console.log("from eventgroup",groupId)
 
 if (!isLoading) {
     return(
         <>
-        <Link to ={`group/${group.id}`}>
+        <Link to ={`/group/${group.id}`}>
         <img src={group.GroupImages.filter(imgFinder)[0].url}></img>
         <h3>{group.name}</h3>
         <h3>{group.private===true?"Private":"Public"}</h3>

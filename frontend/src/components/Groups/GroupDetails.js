@@ -21,7 +21,7 @@ const GroupDetails = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
   const [deleteChoice, setDeleteChoice] = useState(false);
-  
+
   const group = useSelector((state) => state.groups.currGroup);
   const dispatch = useDispatch();
   const events = useSelector((state) => state.groups.Events);
@@ -72,7 +72,6 @@ const GroupDetails = () => {
   const handleUpdateGroup = () =>{
     history.push(`/groups/${groupId}/edit`)
   }
-
 
   if (!isLoading) {
     return (
@@ -138,6 +137,7 @@ const GroupDetails = () => {
                     .map((event) => {
                       if (event.endDate < Date()) {
                         return (
+                          <Link to={`/events/${event.id}`}>
                           <div className="groupEvent" id={event.id}>
                             <div>
                               <img
@@ -157,6 +157,7 @@ const GroupDetails = () => {
                               <p>{event.description}</p>
                             </div>
                           </div>
+                        </Link>
                         );
                       }
                     })}

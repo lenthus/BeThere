@@ -5,6 +5,7 @@ import { getGroups } from "../../store/groups";
 // import GroupLink from "./GroupLink";
 import EventLink from "./EventLink";
 import { getEvents } from "../../store/events";
+import "./EventList.css"
 
 const EventList = () =>{
     const events = useSelector(state =>state.events.events)
@@ -17,9 +18,11 @@ const EventList = () =>{
 
     return (
         <>
+        <div className="wrapper">
         <div className="MainLinks">
-        <Link to={`/events`}><h2>Events</h2></Link>
+        <Link to={`/events`}><h2 className="current">Events</h2></Link>
         <Link to={`/groups`}><h2>Groups</h2></Link>
+        <hr className='solid'/>
         </div>
         <section>
             {Object.values(events).map((event) => (
@@ -30,6 +33,7 @@ const EventList = () =>{
 
             ))}
         </section>
+        </div>
         </>
       );
     };

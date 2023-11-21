@@ -7,8 +7,8 @@ const Splash = ()=>{
 
     return (
         <>
-            <Link to={`/groups`}><h5>Groups</h5></Link>
-            <h1>Hello from Splash</h1>
+            <Link to={`/groups`}><h5>See All Groups</h5></Link>
+            <Link to={`/events`}><h5>Find an event</h5></Link>
             <div>
             {user && <Link to="/groups/new" >Start a group</Link>}
         </div>
