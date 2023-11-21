@@ -5,6 +5,7 @@ import { useReducer } from "react"
 import { createGroupImageMaker } from "../../store/groups"
 import { createGroupMaker } from "../../store/groups"
 import { useDispatch } from "react-redux"
+import { createGroupVenueMaker } from "../../store/groups"
 
 
 const CreateGroup = () =>{
@@ -50,6 +51,7 @@ const CreateGroup = () =>{
         if (group.id){
             console.log("img",group)
             await dispatch(createGroupImageMaker(group.id,imgUrl))
+            await dispatch(createGroupVenueMaker(group.id))
             history.push(`/groups/${group.id}`)
         }
       }

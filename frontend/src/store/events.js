@@ -132,14 +132,17 @@ export const createEventMaker = (groupId,event)=>async(dispatch)=>{
       const res = await csrfFetch(`/api/events/${eventId}`,{
         method: "DELETE",
       });
-      const data = await res.json();
-      res.data = data;
+      // res.data = data;
       if (res.ok) {
         // const groups = await res.json()
-        dispatch(deleteEvent(data.Group));
-      } else {
-        throw res;
-      }
+        const data = await res.json();
+        console.log("data",data)
+        dispatch(deleteEvent(eventId));
+          return eventId}
+      // } else {
+      //   throw res;
+      // }
+      return res
     };
 
     export const eventImgDeleteFetch = (eventId) => async (dispatch) => {
@@ -181,9 +184,11 @@ const eventsReducer = (
     }
     // need to update
     case DELETE_EVENT:
-      const newState = { ...state };
-      delete newState[action.eventId];
-      return newState;
+      case DELETE_EVENT:
+      const events = { ...state.events };
+      console.log("action from Delete",action)
+      delete events[action.eventId];
+      return { ...state, events }
 
     case EVENT_DETAILS:
       return { ...state, currEvent: action.event };

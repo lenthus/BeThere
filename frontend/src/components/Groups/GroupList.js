@@ -16,6 +16,7 @@ const GroupList = () =>{
 
     return (
         <>
+        <div className="wrapper">
         <div className="MainLinks">
         <Link to={`/events`}><h2>Events</h2></Link>
         <Link  to={`/groups`}><h2 className="current">Groups</h2></Link>
@@ -29,6 +30,7 @@ const GroupList = () =>{
 
             ))}
         </section>
+        </div>
         </>
       );
     };

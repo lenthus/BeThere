@@ -13,6 +13,7 @@ function EventDeleteModal({groupId,eventId}) {
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(eventDeleteFetch(eventId))
+    console.log("from delete modal",eventId)
     closeModal()
     history.push(`/groups/${groupId}`)
   };
@@ -24,11 +25,11 @@ function EventDeleteModal({groupId,eventId}) {
         <button
         type="confirm"
         onClick={handleSubmit}
-        >Yes(Delete Group)</button>
+        >Yes (Delete Event)</button>
         <button
          type="cancel"
          onClick={closeModal}
-         >No (Keep Group)</button>
+         >No (Keep Event)</button>
 
     </>
   );

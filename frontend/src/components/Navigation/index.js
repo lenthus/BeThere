@@ -11,11 +11,8 @@ function Navigation({ isLoaded }){
 
   return (
     <>
-    <img className="logo" src={image}></img>
+    <NavLink exact to="/"><img className="logo" src={image}></img></NavLink>
     <ul className='loginMenu'>
-      <li>
-        <NavLink exact to="/">Home</NavLink>
-      </li>
       {isLoaded && (
         <li>
           <ProfileButton user={sessionUser} />
