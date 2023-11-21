@@ -79,6 +79,7 @@ const EventDetail = () =>{
               buttonText="Delete"
               modalComponent={<EventDeleteModal
               groupId={group.id}
+              eventId={eventId}
               />}
 
             />

@@ -16,6 +16,7 @@ const EventList = () =>{
         dispatch(getEvents())
     },[])
 
+
     return (
         <>
         <div className="wrapper">

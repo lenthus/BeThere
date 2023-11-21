@@ -198,9 +198,6 @@ const EventCreate = () =>{
             </option>
             )
         })}
-        <option
-        value={null}
-        >None</option>
         </select>
         </div>
         <div className="inputPrice">

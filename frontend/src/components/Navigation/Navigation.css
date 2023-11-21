@@ -2,8 +2,11 @@
     width: 150px;
     height: 100px;
     margin: 10px 0;
+    /* display: inline-block; */
   }
 
   .loginMenu {
-    display: flex; justify-content: space-around
+    display: flex; justify-content: space-around;
+    display: inline-block;
+    float: right;
   }
