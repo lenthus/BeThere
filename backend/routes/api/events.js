@@ -87,6 +87,7 @@ router.get('/',validateEvent, async(req,res)=>{
             endDate:event.endDate,
             numAttending:numMembers,
             previewImage:img,
+            description:event.description,
             Group:{
                 id:event.Group.id,
                 name:event.Group.name,
