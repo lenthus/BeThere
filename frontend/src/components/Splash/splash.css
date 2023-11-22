@@ -1,0 +1,14 @@
+#splashContainer{
+    width: 80%;
+    height: 800px;
+    display: flex;
+    /* flex-direction:row; */
+    justify-content: space-evenly;
+    /* background-color: green; */
+    align-items: flex-end;
+    /* flex-grow: 1; */
+}
+
+:link {
+    margin: 100px;
+}
