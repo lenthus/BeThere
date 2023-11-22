@@ -172,7 +172,7 @@ export const updateGroupMaker = (group,groupId)=>async(dispatch)=>{
       throw res;
     }
     }
-    
+
 /** The reports reducer is complete and does not need to be modified */
 const groupsReducer = (
   state = { groups: {}, currGroup: {}, Events: {} },
@@ -200,7 +200,7 @@ const groupsReducer = (
     case DELETE_GROUP:
       const newState = { ...state };
       delete newState[action.groupId];
-      return newState;
+      return { ...state, newState }
 
     case DETAIL_GROUP:
       return { ...state, currGroup: action.group };

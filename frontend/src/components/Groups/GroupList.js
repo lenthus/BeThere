@@ -20,6 +20,7 @@ const GroupList = () =>{
         <div className="MainLinks">
         <Link to={`/events`}><h2>Events</h2></Link>
         <Link  to={`/groups`}><h2 className="current">Groups</h2></Link>
+        <hr className='solid'/>
         </div>
         <section>
             {Object.values(groups).map((group) => (

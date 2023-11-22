@@ -16,6 +16,7 @@ const GroupLink = ({group})=>{
         <div><h3>{group.numEvents} Events</h3></div>
         <div><h3>{group.private?"Private":"Public"}</h3></div>
         <div className="buttons-container">
+        <hr className='solid'/>
         {/* <Link className="edit-link" to={`/groups/${group.id}/edit`}> Edit </Link> */}
         </div>
       </div>
