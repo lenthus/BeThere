@@ -134,6 +134,7 @@ export const getNumberEvents = (groupId) => async (dispatch) => {
   if (res.ok) {
     // const groups = await res.json()
     dispatch(getNumEvents(data));
+    return data
   } else {
     throw res;
   }
@@ -206,9 +207,9 @@ const groupsReducer = (
       return { ...state, currGroup: action.group };
 
     case GET_NUM_EVENTS: {
-      let event = { ...state.Events };
+      let event = {};
       event = action.groupId.Events;
-      return { ...state, Events: event };
+      return { ...state, Events:event };
     }
 
     case CREATE_GROUP_IMG:{

@@ -94,9 +94,10 @@ const GroupDetails = () => {
           {" "}
           Organized By {group.Organizer.firstName} {group.Organizer.lastName}
         </div>
-        {(!isOrganizer)&&(
+
+        {(!isOrganizer&&user)&&(
         <div>
-          <button onClick={handleButton}>Join this group</button>
+          <button style={{backgroundColor:"red"}} onClick={handleButton}>Join this group</button>
         </div>)}
         {(isOrganizer)&&(
         <div>

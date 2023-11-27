@@ -1,33 +1,4 @@
-img{
-    width: 300px;
-    /* float:left; */
-    margin: 0 15px 0 0;
-    }
-
-    .wrapper{
-        width: 750px;
-        margin: 0 auto;
-    }
-    h2{
-        display: inline-block;
-        padding: 5px;
-    }
-    h3{
-        display: inline-block;
-        padding: 5px;
-    }
-
-    .current{
-        text-decoration: underline;
-    }
-    .eventBox{
-        /* display:grid; */
-    }
-
-    .eventBox .one{
-        /* grid-column: 1px / 2px;;
-        grid-row:1; */
-    }
-    /* .eventBox .two{
-
-    } */
+.MainLinks{
+    margin-left:200px;
+    margin-right:200px;
+}

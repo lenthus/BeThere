@@ -12,15 +12,22 @@ const GroupList = () =>{
 
     useEffect(()=>{
         dispatch(getGroups())
+        // .then(() => dispatch(getNumberEvents(groups.id)))
     },[])
 
     return (
         <>
-        <div className="wrapper">
+
         <div className="MainLinks">
-        <Link to={`/events`}><h2>Events</h2></Link>
-        <Link  to={`/groups`}><h2 className="current">Groups</h2></Link>
+        <Link to={`/events`}
+        style={{"color":"gray"}}
+        ><h2>Events</h2></Link>
+        <Link  to={`/groups`}
+        style={{"color":"teal"}}
+        ><h2 className="current">Groups</h2></Link>
+        <p>Groups in Meetup</p>
         <hr className='solid'/>
+        <div className="wrapper">
         </div>
         <section>
             {Object.values(groups).map((group) => (

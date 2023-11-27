@@ -5,8 +5,12 @@ import * as sessionActions from '../../store/session';
 import OpenModalMenuItem from './OpenModalMenuItem';
 import LoginFormModal from '../LoginFormModal';
 import SignupFormModal from '../SignupFormModal';
+import {useHistory} from 'react-router-dom'
+import { Link } from "react-router-dom";
+
 
 function ProfileButton({ user }) {
+  const history = useHistory()
   const dispatch = useDispatch();
   const [showMenu, setShowMenu] = useState(false);
   const ulRef = useRef();
@@ -32,10 +36,13 @@ function ProfileButton({ user }) {
 
   const closeMenu = () => setShowMenu(false);
 
+  const handleGroups = (e)=>history.push("/")
+
   const logout = (e) => {
     e.preventDefault();
     dispatch(sessionActions.logout());
     closeMenu();
+    history.push('/')
     // setShowMenu(false)
   };
 
@@ -50,13 +57,16 @@ function ProfileButton({ user }) {
       <ul className={ulClassName} ref={ulRef}>
         {user ? (
           <>
-            <li>{user.username}</li>
+            <li>Hello, {user.username}</li>
             <li>{user.firstName} {user.lastName}</li>
             <li>{user.email}</li>
+            <li style={{cursor:"pointer" }} onClick={()=>history.push("/groups")}>View groups</li>
+            <li style={{cursor:"pointer" }} onClick={()=>history.push("/events")}>View events</li>
             <li>
               <button onClick={logout}>Log Out</button>
             </li>
           </>
+
         ) : (
           <>
             <OpenModalMenuItem
@@ -69,6 +79,8 @@ function ProfileButton({ user }) {
               onItemClick={closeMenu}
               modalComponent={<SignupFormModal />}
             />
+            <li style={{cursor:"pointer" }} onClick={()=>history.push("/groups")}>View groups</li>
+            <li style={{cursor:"pointer" }} onClick={()=>history.push("/events")}>View events</li>
           </>
         )}
       </ul>

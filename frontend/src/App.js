@@ -13,6 +13,8 @@ import CreateGroup from "./components/Groups/CreateGroup";
 import EventCreate from "./components/Events/EventCreate";
 import GroupUpdate from "./components/Groups/GroupUpdate";
 import EventUpdate from "./components/Events/EventUpdate";
+// import { library } from '@fortawesome/fontawesome-svg-core'
+// import { fas } from '@fortawesome/free-solid-svg-icons'
 
 function App() {
   const dispatch = useDispatch();

@@ -112,6 +112,7 @@ const EventCreate = () =>{
     if (!isLoading) {
     return(
         <>
+        <h3>Create an event for {group.name}</h3>
         <form
         className="CreateEvent"
         onSubmit={handleSubmit}>
