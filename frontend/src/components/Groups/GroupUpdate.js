@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux"
 import { useParams } from "react-router-dom"
 import { getGroupDetails } from "../../store/groups"
 import { useSelector } from "react-redux"
+import "./GroupUpdate.css"
 
 
 const GroupUpdate = ()=>{
@@ -83,12 +84,14 @@ const GroupUpdate = ()=>{
   if(!isLoading){
     return(
         <>
+        <div className="GroupUpdateBox">
         {/* {populate()} */}
         <form
         className="CreateGroup"
         onSubmit={handleSubmit}>
         <div className="groupIntro">
-        <h4>BECOME AN ORGANIZER</h4>
+        <div>
+        <h4>UPDATE YOUR GROUP'S INFORMATION</h4></div>
         <h3>We'll walk you through a few steps to your group's information</h3>
         <hr className='solid'/>
         <h3>First, set your group's location.</h3>
@@ -207,6 +210,7 @@ const GroupUpdate = ()=>{
         disabled={Object.values(errors).length>0}
         >Update Group</button>
         </form>
+        </div>
         </>
     )
 }}

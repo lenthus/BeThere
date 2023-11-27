@@ -10,6 +10,7 @@ import EventDeleteModal from "./EventDelete";
 import { getGroupDetails } from "../../store/groups";
 import { useRef } from "react";
 import {useHistory} from 'react-router-dom'
+import "./EventDetail.css"
 
 
 
@@ -65,15 +66,20 @@ const EventDetail = () =>{
       if (!isLoading) {
         return (
         <>
-        <div className="eventlink">
-            <h4> &lt; <Link to={`/events`}>Events</Link> </h4></div>
+        <div className="EventDetailsBox">
+        <div className="EventInfo">
+            <h4> &lt; <Link to={`/events`}>Events</Link> </h4>
         <h2>{event.name}</h2>
         <p>Hosted by {group.Organizer.firstName} {group.Organizer.lastName}</p>
-            <EventGroup groupId={event.Group.id}/>
+      </div>
+          <div className="EventImageBox">
             <img src={event.EventImages.filter(imgFinder)[0]?.url}></img>
-
+        </div>
+        <div className="EventGroupBox">
+        <EventGroup groupId={event.Group.id}/>
+        </div>
         {(isOrganizer)&&(
-        <div>
+        <div className="controls">
           <button onClick={handleUpdateEvent}>Update</button>
            <OpenModalButton
               buttonText="Delete"
@@ -85,12 +91,16 @@ const EventDetail = () =>{
             />
         </div>)}
             <div className= "eventDate">
-            <div><h3>Start {event.startDate.split("T")[0]} {"\u00b7"} {event.startDate.split("T")[1].split(".")[0]}</h3></div>
-            <div><h3>End {event.endDate.split("T")[0]} {"\u00b7"} {event.endDate.split("T")[1].split(".")[0]}</h3></div>
-            <div><h3>{event.price}</h3></div>
-            <div><h3>{event.type}</h3></div>
+            <div><i class="fa-regular fa-clock"></i><h3>Start {event.startDate.split("T")[0]} {"\u00b7"} {event.startDate.split("T")[1].split(".")[0]}</h3></div>
+            <div><i class="fa-regular fa-clock"></i><h3>End {event.endDate.split("T")[0]} {"\u00b7"} {event.endDate.split("T")[1].split(".")[0]}</h3></div>
+            <div><i class="fa-solid fa-dollar-sign"></i><h3>{event.price===0?"Free":event.price}</h3></div>
+            <div><i class="fa-solid fa-map-pin"></i><h3>{event.type}</h3></div>
             </div>
-            <div className="eventDetails"><p>{event.description}</p></div>
+            <div className="eventDetails">
+              <h3>Description</h3>
+              <p>{event.description}</p>
+              </div>
+        </div>
         </>
     )
 }

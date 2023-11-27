@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { useModal } from "../../context/Modal";
 import { groupDeleteFetch } from "../../store/groups";
 import {useHistory} from 'react-router-dom'
+import "./GroupDelete.css"
 
 
 function GroupDeleteModal({groupId}) {
@@ -19,19 +20,25 @@ function GroupDeleteModal({groupId}) {
 
   return (
     <>
-      <h1>Are you sure you want to remove this group?</h1>
-
+    <div className="groupDeleteBox">
+      <div><h1>Confirm Delete</h1></div>
+    <div>
+      <h2>Are you sure you want to remove this group?</h2>
+    </div>
+    <div className="btn">
         <button
         type="confirm"
         onClick={handleSubmit}
         style={{backgroundColor:"red"}}
-        >Yes(Delete Group)</button>
+        >Yes (Delete Group)</button></div>
+        <div className="btn">
         <button
          type="cancel"
          style={{backgroundColor:"gray"}}
          onClick={closeModal}
          >No (Keep Group)</button>
-
+    </div>
+    </div>
     </>
   );
 }

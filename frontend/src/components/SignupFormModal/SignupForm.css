@@ -1,0 +1,12 @@
+.signupBox {
+    display: flex;
+    height: 400px;
+    margin: 20px;
+    /* align-content: center; */
+    /* justify-content: center; */
+    align-items: stretch;
+    /* row-gap: 50px; */
+    /* column-gap: 50; */
+    flex-direction: column;
+    justify-content: space-evenly;
+}
