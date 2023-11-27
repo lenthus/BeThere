@@ -1,0 +1,30 @@
+.eventGroupBox {
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+    align-items: center;
+    background-color: lightgray;
+    flex-wrap: auto;
+    width: fit-content;
+    border-radius: 10px;
+    margin: 20px;
+    padding: 20px;
+
+}
+
+.EventGroupImage {
+    /* grid-column-start: 1;
+    grid-column-end: 1; */
+    float: left;
+
+}
+.EventGroupImage > img {
+    max-width: 50px;
+}
+
+.EventGroupInfo {
+    display: flex;
+    /* grid-column-start: 2;
+    grid-column-end: 3; */
+    flex-direction: column;
+}

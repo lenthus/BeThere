@@ -23,7 +23,7 @@ const GroupLink = ({group})=>{
     // console.log()
 
     if(!isLoading){
-    console.log(group.id,event)
+    console.log(group.id,group)
     return(
         <>
     <div className = 'groupBox'>

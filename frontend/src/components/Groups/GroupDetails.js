@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {useHistory} from 'react-router-dom'
+import "./GroupDetails.css"
 
 import OpenModalButton from "../OpenModalButton";
 // import OpenModalMenuItem from '../Navigation/OpenModalMenuItem';
@@ -76,20 +77,27 @@ const GroupDetails = () => {
   if (!isLoading) {
     return (
       <>
+
+      <div className="groupDetailBox"
+      >
+
+        <div className="GroupImage">
         <Link to={`/groups`}>
-          <h5>Groups</h5>
+          <h4>Groups</h4>
         </Link>
+
         <img src={group.GroupImages[0]?.url} />
+        </div>
+         <div className="groupInfoBox">
         <div className="li-contents-flex">
           <div>
             <h2>{group.name}</h2>
           </div>
         </div>
         <div>
-          <h4>{group.city}</h4>
+          <h4>{group.city}, {group.state}</h4>
         </div>
-        <div>{events.length} events</div>
-        <div>{handleStatus(group.Private)}</div>
+        <div>{events.length} events {"\u00b7"} {handleStatus(group.Private)}</div>
         <div>
           {" "}
           Organized By {group.Organizer.firstName} {group.Organizer.lastName}
@@ -108,9 +116,10 @@ const GroupDetails = () => {
               modalComponent={<GroupDeleteModal
               groupId={group.id}
               />}
-
             />
         </div>)}
+        <hr className='solid'/>
+        </div>
         <div className="EventsPart">
           <div>
             <h3>Organizer</h3>
@@ -124,7 +133,10 @@ const GroupDetails = () => {
           <div>
             <p>{group.about}</p>
           </div>
-          <div>
+          </div>
+
+        <hr className='solid'/>
+          <div className="upcomingEvents">
             {events.filter((event) =>new Date(event.endDate) > new Date()).length > 0 && (
               <>
                 <div>
@@ -140,12 +152,13 @@ const GroupDetails = () => {
                         return (
                           <Link to={`/events/${event.id}`}>
                           <div className="groupEvent" id={event.id}>
-                            <div>
+                            <div className="previewImage">
                               <img
                                 src={event.previewImage}
                                 alt="event preview"
                               ></img>
                             </div>
+                            <div className="eventInfoLink">
                             <div>
                               {event.startDate.split("T")[0]} {"\u00b7"}{" "}
                               {event.startDate.split("T")[1].split(".")[0]}
@@ -157,7 +170,7 @@ const GroupDetails = () => {
                             <div>
                               <p>{event.description}</p>
                             </div>
-                          </div>
+                          </div></div>
                         </Link>
                         );
                       }
@@ -187,9 +200,10 @@ const GroupDetails = () => {
                   .reverse()
                   .map((event) => (
                       <div className="groupEvent" id={event.id} key={event.id}>
-                        <div>
+                        <div className="previewImage">
                           <img src={event.previewImage} alt="event preview" />
                         </div>
+                        <div className="eventInfoLink">
                         <div>
                           {event.startDate.split("T")[0]} {"\u00b7"}{" "}
                           {event.startDate.split("T")[1].split(".")[0]}
@@ -201,6 +215,7 @@ const GroupDetails = () => {
                         <div>
                           <p>{event.description}</p>
                         </div>
+                      </div>
                       </div>
                     ))}
                 </div>

@@ -9,7 +9,7 @@ import { useEffect } from "react"
 import { getGroupDetails } from "../../store/groups"
 import { createEventMaker } from "../../store/events"
 import { createEventImageMaker } from "../../store/events"
-
+import "./EventCreate.css"
 
 
 
@@ -112,6 +112,7 @@ const EventCreate = () =>{
     if (!isLoading) {
     return(
         <>
+        <div className="EventCreateBox">
         <h3>Create an event for {group.name}</h3>
         <form
         className="CreateEvent"
@@ -282,6 +283,7 @@ const EventCreate = () =>{
         disabled={Object.values(errors).length>0}
         >Create Event</button>
         </form>
+        </div>
         </>
     )
 }}

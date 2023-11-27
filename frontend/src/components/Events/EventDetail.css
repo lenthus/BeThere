@@ -1,0 +1,41 @@
+.EventDetailsBox {
+    display: grid;
+    grid-template-columns:  1fr 1fr 1fr 1fr;
+    grid-auto-rows: minmax(100px,auto);
+    /* max-width: auto; */
+    width: 80%;
+    margin: auto;
+    grid-template-areas:
+    "EventInfo EventInfo EventInfo EventInfo"
+    "EventImageBox EventImageBox EventGroupBox EventGroupBox"
+    "EventImageBox EventImageBox EventDate EventDate"
+    " . .  controls ."
+    "EventDetails EventDetails EventDetails EventDetails"
+}
+
+.eventDate {
+    grid-area: EventDate;
+}
+
+.EventInfo {
+    grid-area: EventInfo;
+}
+
+.EventGroupBox {
+    grid-area: EventGroupBox;
+}
+
+.EventImageBox {
+    grid-area: EventImageBox;
+}
+.EventImageBox >img {
+    width: 400px;
+}
+
+.eventDetails {
+    grid-area: EventDetails;
+}
+
+.controls {
+    grid-area: controls;
+}

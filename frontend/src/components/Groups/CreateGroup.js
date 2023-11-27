@@ -6,6 +6,7 @@ import { createGroupImageMaker } from "../../store/groups"
 import { createGroupMaker } from "../../store/groups"
 import { useDispatch } from "react-redux"
 import { createGroupVenueMaker } from "../../store/groups"
+import "./CreateGroup.css"
 
 
 const CreateGroup = () =>{
@@ -87,6 +88,7 @@ const CreateGroup = () =>{
 
     return(
         <>
+        <div className="CreateGroupBox">
         <form
         className="CreateGroup"
         onSubmit={handleSubmit
@@ -218,6 +220,7 @@ const CreateGroup = () =>{
         disabled={Object.values(errors).length>0}
         >Create Group</button>
         </form>
+        </div>
         </>
     )
 }

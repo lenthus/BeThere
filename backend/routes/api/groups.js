@@ -18,7 +18,7 @@ router.get('/', async(req,res)=>{
    let img = null
    for (const group of getAllGroups){
     //get image preview
-    const imageGetter = await Image.findOne({where:{imageableId:group.id,preview:true}})
+    const imageGetter = await Image.findOne({where:{imageableId:group.id,preview:true,imageType:"Group"}})
     if (imageGetter){
     img = imageGetter.url
     } else{
