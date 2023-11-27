@@ -1,14 +1,82 @@
 #splashContainer{
-    width: 80%;
+    width: 100%;
     height: 800px;
-    display: flex;
-    /* flex-direction:row; */
-    justify-content: space-evenly;
+    display: grid;
+    justify-items: center;
     /* background-color: green; */
-    align-items: flex-end;
-    /* flex-grow: 1; */
+   grid-template-columns: 1fr 1fr 1fr;
+   grid-template-rows: 1fr 1fr 1fr;
+   row-gap: 1rem;
 }
 
-:link {
+/* :link {
+    margin: 50px;
+} */
+
+.joiner {
     margin: 100px;
+    grid-column-start: 2;
+    grid-column-end: 2;
+
+    grid-row-start: 2;
+    grid-row-end: 2;
+}
+
+.BeThereAbout {
+    margin: 100px;
+    grid-column-start: 1;
+    grid-column-end: 1;
+
+    grid-row-start: 1;
+    grid-row-end: 1;
+}
+
+#one {
+    grid-column-start: 1;
+    grid-column-end: 1;
+
+    grid-row-start: 3;
+    grid-row-end: 3;
+}
+
+#two {
+    grid-column-start: 2;
+    grid-column-end: 2;
+
+    grid-row-start: 3;
+    grid-row-end: 3;
+}
+
+.startNew {
+    grid-column-start: 3;
+    grid-column-end: 3;
+
+    grid-row-start: 3;
+    grid-row-end: 3;
+}
+
+.BeThereAbout {
+    grid-column-start: 1;
+    grid-column-end: 1;
+
+    grid-row-start: 1;
+    grid-row-end: 1;
+}
+
+.aboutText {
+    margin: 50px;
+    grid-column-start: 1;
+    grid-column-end: 1;
+
+    grid-row-start: 2;
+    grid-row-end: 2;
+}
+
+.eye {
+    margin: 50px;
+    grid-column-start: 3;
+    grid-column-end: 3;
+
+    grid-row-start: 2;
+    grid-row-end: 2;
 }

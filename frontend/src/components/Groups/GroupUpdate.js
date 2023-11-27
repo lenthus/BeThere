@@ -5,19 +5,26 @@ import { useReducer } from "react"
 import { updateGroupMaker } from "../../store/groups"
 import { useDispatch } from "react-redux"
 import { useParams } from "react-router-dom"
+import { getGroupDetails } from "../../store/groups"
+import { useSelector } from "react-redux"
 
 
 const GroupUpdate = ()=>{
     const dispatch=useDispatch()
+    const group = useSelector((state) => state.groups.currGroup);
     const {groupId} = useParams()
     const [location, setLocation] = useState('')
-    const [name, setName] = useState('')
+    const [name, setName] = useState()
     const [description, setDescription] = useState('')
-    const [type, setType] = useState('')
-    const [status, setStatus] = useState('')
+    const [type, setType] = useState(group.type)
+    const [status, setStatus] = useState(group.private===true?true:false)
     const [errors, setErrors]=useState({})
+    const [isLoading, setIsLoading] = useState(true);
     const history = useHistory()
     const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
+
+
+
 
     const handleSubmit =async (e) => {
         e.preventDefault()
@@ -40,12 +47,17 @@ const GroupUpdate = ()=>{
                         state: cityState[1].trim(),
                         }
         console.log(payload)
-        
+
         let group = await dispatch(updateGroupMaker(payload,groupId))
 
             history.push(`/groups/${group.id}`)
       }
     }
+
+    useEffect(() => {
+      dispatch(getGroupDetails(groupId))
+        .then(() => setIsLoading(false));
+    }, [dispatch, groupId]);
 
     const handleLocation = (e) => setLocation(e.target.value)
     const handleName = (e) => setName(e.target.value)
@@ -64,13 +76,17 @@ const GroupUpdate = ()=>{
         console.log(errors)
         setErrors(errors)}
 
+  // const populate=()=>{
+  //   setName(group.name)
+  // }
 
+  if(!isLoading){
     return(
         <>
+        {/* {populate()} */}
         <form
         className="CreateGroup"
-        onSubmit={handleSubmit
-        }>
+        onSubmit={handleSubmit}>
         <div className="groupIntro">
         <h4>BECOME AN ORGANIZER</h4>
         <h3>We'll walk you through a few steps to your group's information</h3>
@@ -84,7 +100,8 @@ const GroupUpdate = ()=>{
             type="text"
             name="location"
             onChange={handleLocation}
-            placeholder="City, STATE"
+            defaultValue={`${group.city},${group.state}`}
+            // placeholder="City, State"
         />
         {errors.location&&
           <p className="errors">
@@ -99,7 +116,7 @@ const GroupUpdate = ()=>{
             type="text"
             name="Name"
             onChange={handleName}
-            placeholder="Name"
+           defaultValue={group.name}
         />
           {(errors.name)&&(
           <p className="errors">
@@ -119,7 +136,8 @@ const GroupUpdate = ()=>{
             type="text"
             name="description"
             onChange={handleDescription}
-            placeholder="Please write at least 30 characters"
+            // placeholder="Please write at least 30 characters"
+            defaultValue={group.about}
         />
         {(errors.desc)&&(
           <p className="errors">
@@ -131,8 +149,11 @@ const GroupUpdate = ()=>{
             <h3>Final steps...</h3>
             <p>Is this an in person or online group?</p>
         <select
+        defaultValue={group.type}
+        placeholder={group.type}
         onChange={handleType}
         value={type}
+
         >
             <option
             value=""
@@ -188,6 +209,6 @@ const GroupUpdate = ()=>{
         </form>
         </>
     )
-}
+}}
 
 export default GroupUpdate

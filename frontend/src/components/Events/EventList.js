@@ -19,11 +19,17 @@ const EventList = () =>{
 
     return (
         <>
-        <div className="wrapper">
+
         <div className="MainLinks">
-        <Link to={`/events`}><h2 className="current">Events</h2></Link>
-        <Link to={`/groups`}><h2>Groups</h2></Link>
+        <Link
+        style={{"color":"teal"}}
+        to={`/events`}><h2 className="current">Events</h2></Link>
+        <Link
+        style={{"color":"gray"}}
+        to={`/groups`}><h2>Groups</h2></Link>
+        <p>Events in Meetup</p>
         <hr className='solid'/>
+        <div className="wrapper">
         </div>
         <section>
             {Object.values(events).map((event) => (

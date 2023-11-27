@@ -1,27 +1,48 @@
 import { Link } from "react-router-dom";
-import { Dispatch } from "react";
+import { getNumberEvents } from "../../store/groups";
 import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import "./GroupLink.css"
+import { useState } from "react";
 
 const GroupLink = ({group})=>{
-    const dispatch= useDispatch()
 
+    const [event, setEvent]=useState({})
+    const [isLoading, setIsLoading] = useState(true);
+    const dispatch= useDispatch()
+    // const event = useSelector((state) => state.groups.Events);
+
+    useEffect(() => {
+       dispatch(getNumberEvents(group.id))
+      .then((anything) => setEvent(anything))
+      .then(() => setIsLoading(false));
+    }, [dispatch,group.id]);
+
+
+    // console.log()
+
+    if(!isLoading){
+    console.log(group.id,event)
     return(
         <>
     <div className = 'groupBox'>
-    <img src={group.previewImage} />
+      <div className="groupListImage">
+    <img src={group.previewImage} /></div>
       <div className="li-contents-flex">
         <div><h2>{group.name}</h2></div>
         <div><h3>{group.city}, {group.state}</h3></div>
         <div><p>{group.about}</p></div>
-        <div><h3>{group.numEvents} Events</h3></div>
-        <div><h3>{group.private?"Private":"Public"}</h3></div>
+        <div><h3>{event.Events.length} Events {"\u00b7"}{" "}</h3>
+        <h3>{group.private?"Private":"Public"}</h3></div>
         <div className="buttons-container">
-        <hr className='solid'/>
+
         {/* <Link className="edit-link" to={`/groups/${group.id}/edit`}> Edit </Link> */}
         </div>
       </div>
       </div>
+      <hr className='solid'/>
     </>
     )
-}
+}}
 export default GroupLink

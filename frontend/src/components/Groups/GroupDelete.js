@@ -24,9 +24,11 @@ function GroupDeleteModal({groupId}) {
         <button
         type="confirm"
         onClick={handleSubmit}
+        style={{backgroundColor:"red"}}
         >Yes(Delete Group)</button>
         <button
          type="cancel"
+         style={{backgroundColor:"gray"}}
          onClick={closeModal}
          >No (Keep Group)</button>
 

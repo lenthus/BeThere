@@ -24,10 +24,12 @@ function EventDeleteModal({groupId,eventId}) {
 
         <button
         type="confirm"
+        style={{backgroundColor:"red"}}
         onClick={handleSubmit}
         >Yes (Delete Event)</button>
         <button
          type="cancel"
+         style={{backgroundColor:"gray"}}
          onClick={closeModal}
          >No (Keep Event)</button>
 
