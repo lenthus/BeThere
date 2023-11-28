@@ -12,8 +12,8 @@ const newEvents = [
       "capacity": 10,
       "price": 18.50,
       "description": "The first meet and greet for our group! Come say hello!",
-      "startDate": "2023-11-19 20:00:00",
-      "endDate": "2023-11-19 22:00:00",
+      "startDate": "2023-12-19 20:00:00",
+      "endDate": "2023-12-19 22:00:00",
     }]
 }
 ]
