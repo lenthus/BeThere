@@ -93,7 +93,7 @@ const EventDetail = () =>{
             <div className= "eventDate">
             <div><i class="fa-regular fa-clock"></i><h3>Start {event.startDate.split("T")[0]} {"\u00b7"} {event.startDate.split("T")[1].split(".")[0]}</h3></div>
             <div><i class="fa-regular fa-clock"></i><h3>End {event.endDate.split("T")[0]} {"\u00b7"} {event.endDate.split("T")[1].split(".")[0]}</h3></div>
-            <div><i class="fa-solid fa-dollar-sign"></i><h3>{event.price==0?"Free":event.price}</h3></div>
+            <div><i class="fa-solid fa-dollar-sign"></i><h3>{parseInt(event.price)==0?"Free":event.price}</h3></div>
             <div><i class="fa-solid fa-map-pin"></i><h3>{event.type}</h3></div>
             </div>
             <div className="eventDetails">
