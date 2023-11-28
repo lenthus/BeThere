@@ -37,7 +37,7 @@ const CreateGroup = () =>{
                         name,
                         about:description,
                         type,
-                        Private:status,
+                        private:status,
                         city: cityState[0].trim(),
                         state: cityState[1].trim(),
                         }

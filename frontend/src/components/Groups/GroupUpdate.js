@@ -14,9 +14,9 @@ const GroupUpdate = ()=>{
     const dispatch=useDispatch()
     const group = useSelector((state) => state.groups.currGroup);
     const {groupId} = useParams()
-    const [location, setLocation] = useState('')
-    const [name, setName] = useState()
-    const [description, setDescription] = useState('')
+    const [location, setLocation] = useState(`${group.city},${group.state}`)
+    const [name, setName] = useState(group.name)
+    const [description, setDescription] = useState(group.about)
     const [type, setType] = useState(group.type)
     const [status, setStatus] = useState(group.private===true?true:false)
     const [errors, setErrors]=useState({})
@@ -43,7 +43,7 @@ const GroupUpdate = ()=>{
                         name,
                         about:description,
                         type,
-                        Private:status,
+                        private:status,
                         city: cityState[0].trim(),
                         state: cityState[1].trim(),
                         }
