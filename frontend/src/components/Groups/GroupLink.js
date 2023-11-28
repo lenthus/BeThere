@@ -19,9 +19,6 @@ const GroupLink = ({group})=>{
       .then(() => setIsLoading(false));
     }, [dispatch,group.id]);
 
-
-    // console.log()
-
     if(!isLoading){
     console.log(group.id,group)
     return(
